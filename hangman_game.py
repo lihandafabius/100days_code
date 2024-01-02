@@ -1,61 +1,7 @@
 import random
-stages = ['''
-  +---+
-  |   |
-  O   |
- /|\  |
- / \  |
-      |
-=========
-''', '''
-  +---+
-  |   |
-  O   |
- /|\  |
- /    |
-      |
-=========
-''', '''
-  +---+
-  |   |
-  O   |
- /|\  |
-      |
-      |
-=========
-''', '''
-  +---+
-  |   |
-  O   |
- /|   |
-      |
-      |
-=========''', '''
-  +---+
-  |   |
-  O   |
-  |   |
-      |
-      |
-=========
-''', '''
-  +---+
-  |   |
-  O   |
-      |
-      |
-      |
-=========
-''', '''
-  +---+
-  |   |
-      |
-      |
-      |
-      |
-=========
-''']
-word_list = ["aardvark", "baboon", "camel"]
+from hangman_art import logo,stages
+from hangman_words import word_list
+print(logo)
 chosen_word = random.choice(word_list)
 print(chosen_word)
 word_length = len(chosen_word)
@@ -67,10 +13,13 @@ print(display)
 end_of_game = False
 while not end_of_game:
     guess = input("Enter a letter: ").lower()
+    if guess in display:
+        print("You've already guessed that letter.")
     for index in range(word_length):
         if chosen_word[index] == guess:
             display[index] = guess
     if guess not in chosen_word:
+        print(f"You guessed {guess}, that's not in the word.You lose a life.")
         lives -= 1
         if lives == 0:
             end_of_game = True
