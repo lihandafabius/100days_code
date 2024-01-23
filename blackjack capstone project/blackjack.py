@@ -10,14 +10,16 @@ def deal_card():
 
 
 def calculate_score(user_list, computer_list):
-    user_score = sum(user_list)
-    if user_score == 21:
-        user_score = 0
-
+    user_value = sum(user_list)
+    if user_value == 21:
+        user_value = 0
+    if user_value > 21 and 11 in user_list:
+        user_list.remove(11)
+        user_list.append(1)
     computer_score = sum(computer_list)
     if computer_score == 21:
         computer_score = 0
-    return user_score, computer_score
+    return user_value, computer_score
 
 
 user_cards = []
@@ -29,13 +31,13 @@ while i < 2:
     i += 1
 print(computer_cards)
 print(user_cards)
-user_score, computer_score = calculate_score(user_cards, computer_cards)
+user_score, dealer_score = calculate_score(user_cards, computer_cards)
 if user_score == 0:
     print("You won")
 else:
     print(f"you got {user_score}")
-if computer_score == 0:
+if dealer_score == 0:
     print("Dealer wins")
 else:
-    print(f"Dealer got {computer_score}")
+    print(f"Dealer got {dealer_score}")
 
