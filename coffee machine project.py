@@ -45,7 +45,8 @@ def process_coins():
     total = int(input("How many Quarters: ")) * 0.25
     total += int(input("How many Dimes: ")) * 0.10
     total += int(input("How many Nickles: ")) * 0.05
-    total += int(input("How many Pennies: ")) * 0.01
+    total += int(input("How many Pennies: git push"
+                       "")) * 0.01
     return total
 
 
