@@ -18,10 +18,7 @@ while len(countries_entered) < 50:
                                     prompt="What's another state's name?").title()
     state_data = data[data["state"] == answer_state]
     if answer_state == "Exit":
-        states_to_learn = []
-        for state in states:
-            if state not in countries_entered:
-                states_to_learn.append(state)
+        states_to_learn = [state for state in states if state not in countries_entered]
         df = pandas.DataFrame(states_to_learn)
         df.to_csv("states_to_learn.csv")
 
