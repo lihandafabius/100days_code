@@ -1,9 +1,15 @@
 from twilio.rest import Client
+import smtplib
 
 TWILIO_SID = "AC0c9d8165cc10ca5a15bef271e14044ab"
-TWILIO_AUTH_TOKEN = "44cc883924986e0b052eaba41a24edd7"
+TWILIO_AUTH_TOKEN = "ad083c98a2402e603b2986e5eb094d9c"
 TWILIO_VIRTUAL_NUMBER = '+19062144306'
 TWILIO_VERIFIED_NUMBER = '+254715371294'
+MY_EMAIL = "fabiuslihandaachevi@gmail.com"
+MY_PASSWORD = "etmm guyf pbzh yeck"
+EMAIL_PROVIDER_SMTP_ADDRESS = "smtp.gmail.com"
+# my_email = "fabiuslihandaachevi@gmail.com"
+# password = "etmm guyf pbzh yeck"
 
 
 class NotificationManager:
@@ -19,3 +25,14 @@ class NotificationManager:
         )
         # Prints if successfully sent.
         print(message.sid)
+
+    def send_emails(self, emails, message):
+        with smtplib.SMTP(EMAIL_PROVIDER_SMTP_ADDRESS) as connection:
+            connection.starttls()
+            connection.login(MY_EMAIL, MY_PASSWORD)
+            for email in emails:
+                connection.sendmail(
+                    from_addr=MY_EMAIL,
+                    to_addrs=email,
+                    msg=f"Subject:New Low Price Flight!\n\n{message}".encode('utf-8')
+                )

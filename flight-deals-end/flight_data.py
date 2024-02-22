@@ -12,4 +12,3 @@ class FlightData:
         self.stop_overs = stop_overs
         self.via_city = via_city
 
-
