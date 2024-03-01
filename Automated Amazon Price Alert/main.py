@@ -3,12 +3,13 @@ from bs4 import BeautifulSoup
 import lxml
 import smtplib
 import os
+from pprint import pprint
 
 
 my_email = os.environ.get("email")
 password = os.environ.get("smtplib_password")
 
-url = "https://www.amazon.com/s?k=macbook+air&crid=K13Y3REJYYHI&sprefix=ma%2Caps%2C896&ref=nb_sb_ss_ts-doa-p_3_2"
+url = "https://www.amazon.com/dp/B075CYMYK6?ref_=cm_sw_r_cp_ud_ct_FM9M699VKHTT47YD50Q6&th=1"
 headers = {
     "Accept-Language": "en-GB,en-US;q=0.9,en;q=0.8",
     "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) "
@@ -22,7 +23,7 @@ headers = {
 
 response = requests.get(url,headers=headers)
 data = response.text
-print(data)
+pprint(data)
 soup = BeautifulSoup(data, "lxml")
 price = soup.find(name="span", class_="a-price-whole").getText()
 price = float(price.split("$")[1])
