@@ -3,8 +3,8 @@ from selenium.webdriver.common.by import By
 from selenium.webdriver.common.keys import Keys
 import time
 
-Password = "26RispS_*zwF/3b"
-Email = "fabiuslihanda8@gmail.com"
+Password = ""
+Email = ""
 
 chrome_options = webdriver.ChromeOptions()
 chrome_options.add_experimental_option("detach", True)
