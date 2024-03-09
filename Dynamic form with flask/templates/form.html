@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Dynamic Form</title>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <script src="{{ url_for('static', filename='script.js') }}"></script>
+    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='styles.css') }}">
+
+</head>
+<body>
+    <form action="/submit" method="POST">
+        <table id="dynamic_field">
+            <tr>
+                <td><input type="text" name="name[]" placeholder="Enter your Name" required></td>
+                <td><button type="button" name="add" id="add">Add More</button></td>
+            </tr>
+
+            <!-- Email input field in a separate row -->
+            <tr>
+                <td><input type="email" name="email" placeholder="Enter your Email" required></td>
+            </tr>
+
+            <!-- Department selection dropdown in a separate row -->
+            <tr>
+                <td>
+                    <label for="department">Select your department:</label>
+                    <select name="department" id="department" required>
+                        <option value="" disabled selected>Select your department</option>
+                        <option value="Department of Agricultural Economics & Agribusiness Management">Department of Agricultural Economics & Agribusiness Management</option>
+                        <!-- Add all other department options here -->
+                    </select>
+                </td>
+            </tr>
+
+            <!-- Services offered dropdown in a separate row -->
+            <tr>
+                <td>
+                    <label for="services">Select services your department offers to clients:</label>
+                    <select name="services" id="services" required>
+                        <option value="" disabled selected>Select services</option>
+                        <option value="Registry Administration">Registry Administration</option>
+                        <option value="ICT User Support Services">ICT User Support Services</option>
+                        <!-- Add all other service options here -->
+                    </select>
+                </td>
+            </tr>
+
+            <!-- Current status of selected services dropdown in a separate row -->
+            <tr>
+                <td>
+                    <label for="status">What is the current status of the services selected above?</label>
+                    <select name="status" id="status" required disabled>
+                        <option value="" disabled selected>Select status</option>
+                    </select>
+                </td>
+            </tr>
+
+            <!-- Timeline for digitizing manual services dropdown in a separate row -->
+            <tr>
+                <td>
+                    <label for="timeline">Indicate the timeline for digitizing manual services indicated above:</label>
+                    <select name="timeline" id="timeline" required disabled>
+                        <option value="" disabled selected>Select timeline</option>
+                        <option value="Y1-2023/24">Y1-2023/24</option>
+                        <option value="Y2-2024/25">Y2-2024/25</option>
+                        <option value="Y3-2025/26">Y3-2025/26</option>
+                        <option value="Y4-2026/27">Y4-2026/27</option>
+                    </select>
+                </td>
+            </tr>
+
+            <!-- On-boarded on E-Citizen platform dropdown in a separate row -->
+            <tr>
+                <td>
+                    <label for="on_boarded">Indicate if the services are on-boarded on E-Citizen platform:</label>
+                    <select name="on_boarded" id="on_boarded" required disabled>
+                        <option value="" disabled selected>Select on-boarded status</option>
+                    </select>
+                </td>
+            </tr>
+
+            <!-- Select the guiding legal instrument/policy for services dropdown in a separate row -->
+            <tr>
+                <td>
+                    <label for="legal_instrument">Select the guiding legal instrument/policy for your services:</label>
+                    <select name="legal_instrument" id="legal_instrument" required disabled>
+                        <option value="" disabled selected>Select legal instrument</option>
+                        <option value="Option 1">Option 1</option>
+                        <option value="Option 2">Option 2</option>
+                        <option value="Option 3">Option 3</option>
+                        <option value="Others">Others</option>
+                    </select>
+                    <!-- Textbox for typing if selecting "Others" -->
+                    <input type="text" name="other_instrument" id="other_instrument" placeholder="Type other legal instrument" style="display:none;">
+                </td>
+            </tr>
+
+            <!-- Do you think changes are required? dropdown in a separate row -->
+            <tr>
+                <td>
+                    <label for="changes_required">Do you think the guiding legal instrument/policy indicated above requires changes?</label>
+                    <select name="changes_required" id="changes_required" required disabled>
+                        <option value="" disabled selected>Select option</option>
+                        <option value="Yes">Yes</option>
+                        <option value="No">No</option>
+                    </select>
+                </td>
+            </tr>
+
+            <!-- Indicate changes required textarea in a separate row -->
+            <tr>
+                <td>
+                    <label for="change_details">If yes, indicate the change required:</label>
+                    <textarea name="change_details" id="change_details" rows="4" cols="50" required disabled></textarea>
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    <label for="services_to_enhance">What services have been digitized but still need enhancements?</label>
+                    <select name="services_to_enhance" id="services_to_enhance" required disabled>
+                        <option value="" disabled selected>Select services to enhance</option>
+                    </select>
+                </td>
+            </tr>
+        </table>
+
+        <tr>
+            <td><input type="submit" value="Submit"></td>
+        </tr>
+    </form>
+</body>
+</html>
