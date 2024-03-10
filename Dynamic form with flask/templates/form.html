@@ -13,7 +13,6 @@
         <table id="dynamic_field">
             <tr>
                 <td><input type="text" name="name[]" placeholder="Enter your Name" required></td>
-                <td><button type="button" name="add" id="add">Add More</button></td>
             </tr>
 
             <!-- Email input field in a separate row -->
@@ -37,12 +36,18 @@
             <tr>
                 <td>
                     <label for="services">Select services your department offers to clients:</label>
-                    <select name="services" id="services" required>
-                        <option value="" disabled selected>Select services</option>
-                        <option value="Registry Administration">Registry Administration</option>
-                        <option value="ICT User Support Services">ICT User Support Services</option>
-                        <!-- Add all other service options here -->
-                    </select>
+                    <div id="services">
+                        <input type="checkbox" name="services[]" id="service1" value="Registry Administration">
+                        <label for="service1">Registry Administration</label><br>
+
+                        <input type="checkbox" name="services[]" id="service2" value="ICT User Support Services">
+                        <label for="service2">ICT User Support Services</label><br>
+
+                        <input type="checkbox" name="services[]" id="service3" value="ICT Security and Maintenance">
+                        <label for="service3">ICT Security and Maintenance</label><br>
+
+                        <!-- Add more checkboxes for other services -->
+                    </div>
                 </td>
             </tr>
 

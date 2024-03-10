@@ -1,83 +1,45 @@
 $(document).ready(function(){
-    var i = 1;
-    $('#add').click(function(){
-        i++;
-        $('#dynamic_field').append('<tr id="row'+i+'"><td><input type="text" name="name[]" placeholder="Enter another Name" /></td><td><button type="button" name="remove" id="'+i+'" class="btn_remove">X</button></td></tr>');
+    // Handling the selection of services
+    $('input[name="services[]"]').change(function(){
+        // Enable other inputs
+        $('#status').prop('disabled', false);
+        $('#timeline').prop('disabled', false); // Enable timeline dropdown
+        $('#on_boarded').prop('disabled', false); // Enable on-boarded dropdown
+        $('#legal_instrument').prop('disabled', false);
+        $('#changes_required').prop('disabled', false);
+        $('#services_to_enhance').prop('disabled', false);
+
+        // Clear existing options in services_to_enhance
+        $('#services_to_enhance').html('');
+
+        // Populate timeline dropdown based on selected services
+        var selectedServices = [];
+        $('input[name="services[]"]:checked').each(function(){
+            selectedServices.push($(this).val());
+        });
+
+        populateTimelineDropdown(selectedServices);
     });
 
-    $(document).on('click', '.btn_remove', function(){
-        var button_id = $(this).attr("id");
-        $('#row'+button_id+'').remove();
-    });
-
-    $('#services').change(function(){
-        var selectedService = $(this).val();
-        if(selectedService !== ''){
-            // Enable the status dropdown
-            $('#status').prop('disabled', false);
-
-            // Populate the status dropdown based on the selected service
-            if(selectedService === 'Registry Administration'){
-                $('#status').html('<option value="Manual">Manual</option><option value="Digitized">Digitized</option>');
-            } else if(selectedService === 'ICT User Support Services'){
-                $('#status').html('<option value="Manual">Manual</option><option value="Digitized">Digitized</option>');
+    // Function to populate timeline dropdown based on selected services
+    function populateTimelineDropdown(selectedServices) {
+        $('#timeline').html('<option value="" disabled selected>Select timeline</option>');
+        // Loop through selected services and populate timeline dropdown accordingly
+        selectedServices.forEach(function(service) {
+            if (service === 'Registry Administration') {
+                $('#timeline').append('<option value="Y1-2023/24">Y1-2023/24</option>');
+                $('#timeline').append('<option value="Y2-2024/25">Y2-2024/25</option>');
+                $('#timeline').append('<option value="Y3-2025/26">Y3-2025/26</option>');
+                $('#timeline').append('<option value="Y4-2026/27">Y4-2026/27</option>');
+            } else if (service === 'ICT User Support Services') {
+                $('#timeline').append('<option value="Y1-2024/25">Y1-2024/25</option>');
+                $('#timeline').append('<option value="Y2-2025/26">Y2-2025/26</option>');
+                $('#timeline').append('<option value="Y3-2026/27">Y3-2026/27</option>');
+                $('#timeline').append('<option value="Y4-2027/28">Y4-2027/28</option>');
             }
-            // Add other services here
-            else {
-                // If no specific options for the selected service, clear the dropdown
-                $('#status').html('');
-                $('#status').prop('disabled', true);
-            }
-
-            // Enable the timeline dropdown
-            $('#timeline').prop('disabled', false);
-
-            // Enable the on-boarded dropdown
-            $('#on_boarded').prop('disabled', false);
-
-            // Populate the on-boarded dropdown based on selected service
-            if(selectedService === 'Registry Administration' || selectedService === 'ICT User Support Services'){
-                $('#on_boarded').html('<option value="Yes">Yes</option><option value="No">No</option>');
-            } else {
-                $('#on_boarded').html('<option value="No">No</option>');
-            }
-
-            // Enable the legal instrument dropdown
-            $('#legal_instrument').prop('disabled', false);
-
-            // Enable the changes required dropdown
-            $('#changes_required').prop('disabled', false);
-
-            // Enable the services to enhance dropdown
-            $('#services_to_enhance').prop('disabled', false);
-
-            // Populate the services to enhance dropdown based on selected service
-            $('#services_to_enhance').html('');
-            if(selectedService === 'Registry Administration'){
-                $('#services_to_enhance').append('<option value="Registry Administration">Registry Administration</option>');
-            } else if(selectedService === 'ICT User Support Services'){
-                $('#services_to_enhance').append('<option value="ICT User Support Services">ICT User Support Services</option>');
-            }
-            // Add other services here
-            // else if(selectedService === 'Another Service'){
-            //     $('#services_to_enhance').append('<option value="Another Service">Another Service</option>');
-            // }
-        } else {
-            // If no service is selected, disable and clear the status, timeline, on-boarded, legal instrument, changes required, and services to enhance dropdowns
-            $('#status').prop('disabled', true);
-            $('#status').html('');
-            $('#timeline').prop('disabled', true);
-            $('#timeline').html('');
-            $('#on_boarded').prop('disabled', true);
-            $('#on_boarded').html('');
-            $('#legal_instrument').prop('disabled', true);
-            $('#legal_instrument').val('');
-            $('#changes_required').prop('disabled', true);
-            $('#changes_required').val('');
-            $('#services_to_enhance').prop('disabled', true);
-            $('#services_to_enhance').html('');
-        }
-    });
+            // Add more conditions for other services if needed
+        });
+    }
 
     // Handling the selection of legal instrument
     $('#legal_instrument').change(function(){
@@ -103,6 +65,13 @@ $(document).ready(function(){
             $('#change_details').hide();
             $('#change_details').val('');
         }
+    });
+
+    // Handling the selection of on-boarded status
+    $('#on_boarded').change(function(){
+        var onBoardedStatus = $(this).val();
+        // Example logic: Alert the selected status
+        alert('On-boarded status: ' + onBoardedStatus);
     });
 
     // Submit form data via AJAX
