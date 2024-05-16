@@ -1,4 +1,4 @@
-from flask import Flask, render_template, redirect, url_for, request
+from flask import Flask, render_template, redirect, url_for, request, jsonify
 from flask_bootstrap import Bootstrap5
 from flask_sqlalchemy import SQLAlchemy
 from flask_wtf import FlaskForm
@@ -85,6 +85,9 @@ def delete_movie(id):
     db.session.delete(movie)
     db.session.commit()
     return redirect(url_for("home"))
+
+
+
 
 
 @app.route("/find")
