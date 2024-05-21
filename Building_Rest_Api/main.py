@@ -6,8 +6,10 @@ import random
 
 app = Flask(__name__)
 
+
 class Base(DeclarativeBase):
     pass
+
 
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///cafes.db'
 db = SQLAlchemy(model_class=Base)
