@@ -1,16 +1,17 @@
+import os
 from flask import Flask, render_template, request, url_for, redirect, flash, send_from_directory
 from werkzeug.security import generate_password_hash, check_password_hash
 from flask_sqlalchemy import SQLAlchemy
 from sqlalchemy.orm import DeclarativeBase, Mapped, mapped_column
 from sqlalchemy import Integer, String
 from flask_login import UserMixin, login_user, LoginManager, login_required, current_user, logout_user
+from dotenv import load_dotenv
 
-
-# import secrets
-# print(secrets.token_hex())
+# Load environment variables from key.env file
+load_dotenv('key.env')
 
 app = Flask(__name__)
-app.config['SECRET_KEY'] = 'b8d0c671fa581d00dab18fdcee5f004df8db89b8fd95d53b3b307e36c96a7376'
+app.config['SECRET_KEY'] = os.getenv('SECRET_KEY')
 
 
 # CREATE DATABASE
@@ -32,8 +33,9 @@ login_manager.init_app(app)
 def load_user(user_id):
     return db.get_or_404(User, user_id)
 
-
 # CREATE TABLE IN DB with the UserMixin
+
+
 class User(UserMixin, db.Model):
     id: Mapped[int] = mapped_column(Integer, primary_key=True)
     email: Mapped[str] = mapped_column(String(100), unique=True)
