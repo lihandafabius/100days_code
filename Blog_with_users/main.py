@@ -88,7 +88,7 @@ class User(UserMixin, db.Model):
     password: Mapped[str] = mapped_column(String(100))
     name: Mapped[str] = mapped_column(String(100))
 
-    # This will act like a List of BlogPost objects attached to each User.
+    # This will act like a List of BlogPost objects attached to each User
     # The "author" refers to the author property in the BlogPost class.
     posts = relationship("BlogPost", back_populates="author")
     # Add parent relationship#
