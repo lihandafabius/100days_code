@@ -2,8 +2,7 @@
 <project version="4">
   <component name="VcsDirectoryMappings">
     <mapping directory="" vcs="Git" />
-    <mapping directory="$PROJECT_DIR$/Wordle-Game" vcs="Git" />
+    <mapping directory="$PROJECT_DIR$/Wordle-Game" vcs="" />
     <mapping directory="$PROJECT_DIR$/quakejs" vcs="Git" />
-    <mapping directory="$PROJECT_DIR$/quakejs/ioq3/Wordle-Game" vcs="Git" />
   </component>
 </project>
