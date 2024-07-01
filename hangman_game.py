@@ -1,5 +1,5 @@
 import random
-from hangman_art import logo,stages
+from hangman_art import logo, stages
 from hangman_words import word_list
 from clear_console import clear
 print(logo)
