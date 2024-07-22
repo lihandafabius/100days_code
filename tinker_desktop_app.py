@@ -12,7 +12,6 @@ new_logo = None
 watermark_text = None
 logo = None
 
-
 def open_photo():
     global img_path, photo, original_photo, label_photo, tk_photo
     img_path = fd.askopenfilename(
@@ -20,12 +19,11 @@ def open_photo():
         filetypes=[("All files", "*.*")])
     if img_path:
         photo = Image.open(img_path)
-        original_photo = photo.copy()  # Keep a copy of the original photo
+        original_photo = photo.copy()
         tk_photo = ImageTk.PhotoImage(photo.resize((200, 200)))
         label_photo.configure(image=tk_photo)
         label_photo.image = tk_photo
         success_text.set("Photo loaded successfully.")
-
 
 def open_logo():
     global logo_path, new_logo, logo, label_logo, tk_logo
@@ -38,7 +36,6 @@ def open_logo():
         label_logo.configure(image=tk_logo)
         label_logo.image = tk_logo
         success_text.set("Logo loaded successfully.")
-
 
 def save():
     global new_logo, watermark_text, photo, original_photo, logo
@@ -53,7 +50,7 @@ def save():
 
     watermark_text = watermark_text_input.get()
 
-    watermark_image = original_photo.copy()  # Work on a copy of the original photo
+    watermark_image = original_photo.copy()
     draw = ImageDraw.Draw(watermark_image)
 
     if watermark_text:
@@ -72,15 +69,14 @@ def save():
         watermark_image.paste(new_logo, box, new_logo if new_logo.mode == 'RGBA' else None)
 
     if watermark_image.mode == 'RGBA':
-        watermark_image = watermark_image.convert('RGB')  # Convert to RGB mode
+        watermark_image = watermark_image.convert('RGB')
 
     finished_img_path = os.path.splitext(img_path)[0] + "_WM.jpg"
     watermark_image.save(finished_img_path)
     watermark_image.show()
     success_text.set(f"Success! File saved to {finished_img_path}.")
 
-    photo = watermark_image.copy()  # Update photo with the watermark
-
+    photo = watermark_image.copy()
 
 def remove_watermark():
     global photo, original_photo, img_path
@@ -88,7 +84,7 @@ def remove_watermark():
         success_text.set("Please load a photo before removing watermark.")
         return
 
-    photo = original_photo.copy()  # Restore the original photo
+    photo = original_photo.copy()
     tk_photo = ImageTk.PhotoImage(photo.resize((200, 200)))
     label_photo.configure(image=tk_photo)
     label_photo.image = tk_photo
@@ -97,23 +93,34 @@ def remove_watermark():
     photo.save(clean_img_path)
     success_text.set(f"Watermark removed. File saved to {clean_img_path}.")
 
-
 def close_app():
     root.destroy()
 
-# ---------------------------- UI SETUP ------------------------------- #
-
 root = Tk()
-root.config(padx=20, pady=20, bg="white")
+root.config(padx=20, pady=20, bg="#f0f0f0")
 root.title("Watermark Marker")
 
+# Adding background image
+bg_image = Image.open("bg.jpg")
+bg_image = bg_image.resize((800, 600), Image.Resampling.LANCZOS)
+bg_photo = ImageTk.PhotoImage(bg_image)
+bg_label = Label(root, image=bg_photo)
+bg_label.place(relwidth=1, relheight=1)
+
 style = ttk.Style()
-style.configure("RoundedButton.TButton", relief="flat", background="#4CAF50", foreground="white", font=("Arial", 12), padding=10)
+style.configure("RoundedButton.TButton",
+                relief="flat",
+                background="#4CAF50",
+                foreground="white",
+                font=("Arial", 12, "bold"),
+                padding=10,
+                borderwidth=1,
+                focuscolor="none")
 style.map("RoundedButton.TButton",
           background=[('active', '#45a049')],
           relief=[('pressed', 'sunken')])
 
-frame = Frame(root, bg="white")
+frame = Frame(root, bg="#f0f0f0")
 frame.grid(row=0, column=0, padx=10, pady=10)
 
 button_open_photo = ttk.Button(frame, text='Add Images', command=open_photo, width=20, style="RoundedButton.TButton")
@@ -125,50 +132,51 @@ button_open_logo.grid(row=0, column=1, padx=10, pady=10)
 button_remove_watermark = ttk.Button(frame, text='Remove Watermark', command=remove_watermark, width=20, style="RoundedButton.TButton")
 button_remove_watermark.grid(row=0, column=2, padx=10, pady=10)
 
-logo_width_label = Label(frame, text="Logo Width:", bg="white")
-logo_width_label.grid(row=1, column=0)
-logo_width_input = Entry(frame, width=10)
-logo_width_input.insert(0, "50")
-logo_width_input.grid(row=1, column=1, sticky="w")
+input_frame = Frame(root, bg="#f0f0f0")
+input_frame.grid(row=1, column=0, padx=10, pady=10)
 
-logo_height_label = Label(frame, text="Logo Height:", bg="white")
-logo_height_label.grid(row=2, column=0)
-logo_height_input = Entry(frame, width=10)
-logo_height_input.insert(0, "50")
-logo_height_input.grid(row=2, column=1, sticky="w")
+Label(input_frame, text="Logo Width:", bg="#f0f0f0", font=("Arial", 10, "bold")).grid(row=0, column=0, sticky="e")
+logo_width_input = Entry(input_frame, width=10)
+logo_width_input.insert(0, "100")
+logo_width_input.grid(row=0, column=1, sticky="w")
 
-logo_x_offset_label = Label(frame, text="Logo X Offset:", bg="white")
-logo_x_offset_label.grid(row=3, column=0)
-logo_x_offset_input = Entry(frame, width=10)
-logo_x_offset_input.insert(0, "20")
-logo_x_offset_input.grid(row=3, column=1, sticky="w")
+Label(input_frame, text="Logo Height:", bg="#f0f0f0", font=("Arial", 10, "bold")).grid(row=1, column=0, sticky="e")
+logo_height_input = Entry(input_frame, width=10)
+logo_height_input.insert(0, "100")
+logo_height_input.grid(row=1, column=1, sticky="w")
 
-logo_y_offset_label = Label(frame, text="Logo Y Offset:", bg="white")
-logo_y_offset_label.grid(row=4, column=0)
-logo_y_offset_input = Entry(frame, width=10)
-logo_y_offset_input.insert(0, "20")
-logo_y_offset_input.grid(row=4, column=1, sticky="w")
+Label(input_frame, text="Logo X Offset:", bg="#f0f0f0", font=("Arial", 10, "bold")).grid(row=2, column=0, sticky="e")
+logo_x_offset_input = Entry(input_frame, width=10)
+logo_x_offset_input.insert(0, "50")
+logo_x_offset_input.grid(row=2, column=1, sticky="w")
 
-watermark_text_label = Label(frame, text="Watermark Text:", bg="white")
-watermark_text_label.grid(row=5, column=0)
-watermark_text_input = Entry(frame, width=20)
-watermark_text_input.grid(row=5, column=1, columnspan=2, sticky="w")
+Label(input_frame, text="Logo Y Offset:", bg="#f0f0f0", font=("Arial", 10, "bold")).grid(row=3, column=0, sticky="e")
+logo_y_offset_input = Entry(input_frame, width=10)
+logo_y_offset_input.insert(0, "50")
+logo_y_offset_input.grid(row=3, column=1, sticky="w")
 
-button_render = ttk.Button(frame, text='Render', command=save, width=20, style="RoundedButton.TButton")
-button_render.grid(row=6, column=0, columnspan=3, pady=20)
+Label(input_frame, text="Watermark Text:", bg="#f0f0f0", font=("Arial", 10, "bold")).grid(row=4, column=0, sticky="e")
+watermark_text_input = Entry(input_frame, width=30)
+watermark_text_input.grid(row=4, column=1, sticky="w")
 
-button_quit = ttk.Button(frame, text="Close App", command=close_app, width=20, style="RoundedButton.TButton")
-button_quit.grid(row=7, column=0, columnspan=3, pady=10)
+button_render = ttk.Button(input_frame, text='Render', command=save, width=20, style="RoundedButton.TButton")
+button_render.grid(row=5, column=0, columnspan=2, pady=20)
+
+button_quit = ttk.Button(input_frame, text="Close App", command=close_app, width=20, style="RoundedButton.TButton")
+button_quit.grid(row=6, column=0, columnspan=2, pady=10)
 
 success_text = StringVar()
 success_text.set("")
-success_label = Label(root, textvariable=success_text, background='white')
-success_label.grid(row=1, column=0, columnspan=3)
+success_label = Label(root, textvariable=success_text, background='#f0f0f0', font=("Arial", 12))
+success_label.grid(row=2, column=0, pady=10)
 
-label_photo = Label(root)
-label_photo.grid(row=2, column=0, pady=10)
+output_frame = Frame(root, bg="#f0f0f0")
+output_frame.grid(row=3, column=0, padx=10, pady=10)
 
-label_logo = Label(root)
-label_logo.grid(row=2, column=1, pady=10)
+label_photo = Label(output_frame, bg="#f0f0f0")
+label_photo.grid(row=0, column=0, padx=10, pady=10)
+
+label_logo = Label(output_frame, bg="#f0f0f0")
+label_logo.grid(row=0, column=1, padx=10, pady=10)
 
 root.mainloop()
