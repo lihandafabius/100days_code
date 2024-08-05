@@ -32,9 +32,10 @@ end_of_typing = False
 starting_time = 0
 beginning_time = 0
 all_speeds = []
-reset_timer = 0;
+reset_timer = 0
 
 # Function to assign a randomly picked sentence to user
+
 
 def assign_a_line(arr_sentences):
     # enable function to use previous line's global variable
