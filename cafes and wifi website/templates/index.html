@@ -1,0 +1,43 @@
+{% extends 'base.html' %}
+{% block title %}My Favorite Cafes{% endblock %}
+
+{% block content %}
+<div class="container">
+  <h1 class="heading">Coffee Cafes</h1>
+  <p class="description">These are some of the best cafes around town.</p>
+
+  <div class="cafes-container">
+    {% for cafe in cafes %}
+    <div class="card">
+      <div class="front" style="background-image: url('{{ cafe.img_url }}');">
+        <p class="large">{{ cafe.name }}</p>  <!-- Display the cafe name here -->
+      </div>
+      <div class="back">
+        <div>
+          <div class="title">
+            {{ cafe.location }}
+          </div>
+          <div class="details">
+            <p>Sockets: {{ 'Yes' if cafe.has_sockets else 'No' }}</p>
+            <p>Toilet: {{ 'Yes' if cafe.has_toilet else 'No' }}</p>
+            <p>WiFi: {{ 'Yes' if cafe.has_wifi else 'No' }}</p>
+            <p>Take Calls: {{ 'Yes' if cafe.can_take_calls else 'No' }}</p>
+            <p>Seats: {{ cafe.seats }}</p>
+            <p>Price: {{ cafe.coffee_price }}</p>
+          </div>
+
+          <!-- Edit and Delete Buttons -->
+          <a href="{{ url_for('edit_cafe', id=cafe.id) }}" class="button">Update</a>
+          <a href="{{ url_for('delete_cafe', id=cafe.id) }}" class="button delete-button">Delete</a>
+
+        </div>
+      </div>
+    </div>
+    {% endfor %}
+  </div>
+</div>
+<div class="container text-center add">
+  <a href="{{ url_for('add_cafe') }}" class="button">Add Cafe</a>
+</div>
+
+{% endblock %}

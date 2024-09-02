@@ -1,0 +1,18 @@
+{% extends "base.html" %}
+
+{% block content %}
+<h1>Edit Cafe</h1>
+<form method="POST">
+    {{ form.hidden_tag() }}
+    {{ form.map_url.label }} {{ form.map_url() }}<br>
+    {{ form.img_url.label }} {{ form.img_url() }}<br>
+    {{ form.location.label }} {{ form.location() }}<br>
+    {{ form.has_sockets.label }} {{ form.has_sockets() }}<br>
+    {{ form.has_toilet.label }} {{ form.has_toilet() }}<br>
+    {{ form.has_wifi.label }} {{ form.has_wifi() }}<br>
+    {{ form.can_take_calls.label }} {{ form.can_take_calls() }}<br>
+    {{ form.seats.label }} {{ form.seats() }}<br>
+    {{ form.coffee_price.label }} {{ form.coffee_price() }}<br>
+    {{ form.submit() }}
+</form>
+{% endblock %}
