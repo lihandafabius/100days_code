@@ -100,7 +100,7 @@ website_entry.focus()
 
 username_entry = Entry(width=35)
 username_entry.grid(row=2, column=1, columnspan=2)
-username_entry.insert(0, "fabiuslihandaachevi@gmail.com")
+username_entry.insert(0, "")
 
 password_var = StringVar()
 password_entry = Entry(width=21, textvariable=password_var, show="*")
