@@ -1,0 +1,43 @@
+{% extends "base.html" %}
+
+{% block title %}{{ status.capitalize() | replace('_', ' ') }} Tasks{% endblock %}
+
+{% block content %}
+<div class="container">
+    <h2>{{ status.capitalize() | replace('_', ' ') }} Tasks</h2>
+
+    <table class="table table-striped">
+        <thead>
+            <tr>
+                <th>Task</th>
+                <th>Completed</th>
+                <th>Due Date</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for task in tasks %}
+            <tr>
+                <td>{{ task.task }}</td>
+                <td>{{ 'Yes' if task.task_done else 'No' }}</td>
+                <td>{{ task.due_date }}</td>
+                <td>
+                    <a href="{{ url_for('update_task', task_id=task.id) }}" class="btn btn-warning btn-sm">Edit</a>
+
+                    <!-- Form for deleting a task -->
+                    <form action="{{ url_for('delete_task', task_id=task.id) }}" method="POST" style="display:inline;">
+                        <button type="submit" class="btn btn-danger btn-sm">Delete</button>
+                    </form>
+                </td>
+            </tr>
+            {% else %}
+            <tr>
+                <td colspan="4" class="text-center">No tasks found.</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+
+    <a href="{{ url_for('dashboard') }}" class="btn btn-secondary">Back to Dashboard</a>
+</div>
+{% endblock %}
