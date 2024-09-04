@@ -7,17 +7,17 @@
     <h2>{{ user.username }}'s To-Do List</h2>
 
     <table class="table table-striped">
-        <thead>
+        <thead class="thead-dark">
             <tr>
-                <th>Task</th>
-                <th>Completed</th>
-                <th>Due Date</th>
-                <th>Actions</th>
+                <th scope="col" class="bg-primary text-white font-weight-bold">Task</th>
+                <th scope="col" class="bg-primary text-white font-weight-bold">Completed</th>
+                <th scope="col" class="bg-primary text-white font-weight-bold">Due Date</th>
+                <th scope="col" class="bg-primary text-white font-weight-bold">Actions</th>
             </tr>
         </thead>
         <tbody>
             {% for task in tasks %}
-            <tr>
+            <tr class="{% if task.starred %}table-warning{% endif %}">
                 <td>{{ task.task }}</td>
                 <td>
                     <form action="{{ url_for('update_task_status', task_id=task.id) }}" method="POST" style="display:inline;">
@@ -30,6 +30,15 @@
                     <form action="{{ url_for('delete_task', task_id=task.id) }}" method="POST" style="display:inline;">
                         <button type="submit" class="btn btn-danger btn-sm">Delete</button>
                     </form>
+                    <form action="{{ url_for('toggle_star', task_id=task.id) }}" method="POST" style="display:inline;">
+                        <button type="submit" class="btn btn-info btn-sm">
+                            {% if task.starred %}
+                                Unstar
+                            {% else %}
+                                Star
+                            {% endif %}
+                        </button>
+                    </form>
                 </td>
             </tr>
             {% else %}
@@ -40,9 +49,12 @@
         </tbody>
     </table>
 
-    <a href="{{ url_for('add_task') }}" class="btn btn-primary">Add New Task</a>
-    <a href="{{ url_for('tasks', status='finished') }}" class="btn btn-success">View Finished Tasks</a>
-    <a href="{{ url_for('tasks', status='unfinished') }}" class="btn btn-warning">View Unfinished Tasks</a>
+    <div class="btn-group" role="group">
+        <a href="{{ url_for('add_task') }}" class="btn btn-primary">Add New Task</a>
+        <a href="{{ url_for('tasks', status='finished') }}" class="btn btn-success">View Finished Tasks</a>
+        <a href="{{ url_for('tasks', status='unfinished') }}" class="btn btn-warning">View Unfinished Tasks</a>
+        <a href="{{ url_for('starred_tasks') }}" class="btn btn-info">View Starred Tasks</a>
+    </div>
 
 </div>
 {% endblock %}

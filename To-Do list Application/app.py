@@ -1,3 +1,4 @@
+import atexit
 
 from flask import Flask, render_template, redirect, url_for, flash, request
 from flask_sqlalchemy import SQLAlchemy
@@ -7,13 +8,15 @@ from flask_wtf import FlaskForm
 from wtforms import StringField, PasswordField, BooleanField, SubmitField
 from wtforms.validators import InputRequired, Length, ValidationError, Email
 from flask_bootstrap import Bootstrap
-
+import smtplib
+import datetime as dt
+from apscheduler.schedulers.background import BackgroundScheduler
 
 app = Flask(__name__)
 
 # Configure the application and database
 app.config['SECRET_KEY'] = 'your_secret_key'
-app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///todo.db'
+app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///todo1.db'
 db = SQLAlchemy(app)
 Bootstrap(app)
 
@@ -21,6 +24,10 @@ Bootstrap(app)
 login_manager = LoginManager()
 login_manager.init_app(app)
 login_manager.login_view = 'login'
+
+# Email credentials (use environment variables or secure methods in production)
+my_email = ""
+MY_PASSWORD = ""
 
 
 # User model
@@ -38,6 +45,7 @@ class Task(db.Model):
     task = db.Column(db.String(200), nullable=False)
     task_done = db.Column(db.Boolean, default=False)
     due_date = db.Column(db.String(100), nullable=False)
+    starred = db.Column(db.Boolean, default=False)
     user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
 
 
@@ -219,9 +227,54 @@ def tasks(status):
     return render_template('tasks.html', tasks=tasks, status=status, form=form)
 
 
+@app.route('/toggle_star/<int:task_id>', methods=['POST'])
+@login_required
+def toggle_star(task_id):
+    task = Task.query.get_or_404(task_id)
+    if task.owner != current_user:
+        flash('You do not have permission to star this task.', 'danger')
+        return redirect(url_for('dashboard'))
+
+    task.starred = not task.starred  # Toggle the starred status
+    db.session.commit()
+    flash('Task star status updated successfully.', 'success')
+    return redirect(url_for('dashboard'))
+
+
+@app.route('/tasks/starred')
+@login_required
+def starred_tasks():
+    form = TaskForm()
+    tasks = Task.query.filter_by(owner=current_user, starred=True).all()
+    return render_template('tasks.html', tasks=tasks, status='starred', form=form)
+
+
+# Reminder functionality
+def send_reminder_email(user, task):
+    with smtplib.SMTP("smtp.gmail.com", 587) as connection:
+        connection.starttls()
+        connection.login(user=my_email, password=MY_PASSWORD)
+        message = f"Subject: Task Due Today\n\nDear {user.username},\n\nThis is a reminder that your task '{task.task}' is due today."
+        connection.sendmail(
+            from_addr=my_email,
+            to_addrs=user.email,
+            msg=message
+        )
+
+
+def check_due_tasks():
+    today = dt.datetime.now().strftime("%Y-%m-%d")
+    tasks_due_today = Task.query.filter_by(due_date=today, task_done=False).all()
+    for task in tasks_due_today:
+        send_reminder_email(task.owner, task)
+
+
+scheduler = BackgroundScheduler()
+scheduler.add_job(func=check_due_tasks, trigger="cron", hour=12)  # Sends reminder at midday
+scheduler.start()
+
+# Clean up on exit
+atexit.register(lambda: scheduler.shutdown())
+
 if __name__ == '__main__':
-    with app.app_context():
-        db.create_all()
     app.run(debug=True)
-
-
