@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PDF to Speech Converter</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <style>
+        .pdf-list {
+            margin-top: 20px;
+        }
+        .pdf-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 10px;
+            margin-bottom: 15px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+        }
+        .pdf-item h5 {
+            margin: 0;
+        }
+        .pdf-buttons a, .pdf-buttons form {
+            margin-left: 10px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h2 class="mt-4">Convert PDF to Speech</h2>
+        <form action="/" method="POST" enctype="multipart/form-data">
+            <div class="form-group">
+                <label for="pdf">Select PDF:</label>
+                <input type="file" class="form-control-file" id="pdf" name="pdf" required>
+            </div>
+
+            <div class="form-group">
+                <label for="voice">Select Voice:</label>
+                <select class="form-control" id="voice" name="voice">
+                    <option value="male">Male</option>
+                    <option value="female">Female</option>
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label for="rate">Speech Rate (WPM):</label>
+                <input type="range" class="form-control-range" id="rate" name="rate" min="100" max="250" value="150">
+            </div>
+
+            <div class="form-group">
+                <label for="volume">Volume:</label>
+                <input type="range" class="form-control-range" id="volume" name="volume" min="0.5" max="1.0" step="0.1" value="1.0">
+            </div>
+
+            <div class="form-group">
+                <label for="start_page">Start from Page:</label>
+                <input type="number" class="form-control" id="start_page" name="start_page" value="1" required>
+            </div>
+
+            <button type="submit" name="action" value="convert" class="btn btn-primary">Convert to Speech</button>
+            <button type="submit" name="action" value="pause" class="btn btn-warning">Pause Speech</button>
+            <button type="submit" name="action" value="resume" class="btn btn-success">Resume Speech</button>
+        </form>
+
+        <h3 class="mt-4">Previously Converted PDFs</h3>
+
+        <div class="pdf-list">
+            {% for pdf in pdf_list %}
+                <div class="pdf-item">
+                    <h5>{{ pdf[1] }}</h5>
+                    <div class="pdf-buttons">
+                        <a href="{{ url_for('view_pdf', pdf_id=pdf[0]) }}" class="btn btn-info btn-sm">View</a>
+                        <form action="{{ url_for('delete_pdf', pdf_id=pdf[0]) }}" method="POST" style="display: inline;">
+                            <button type="submit" class="btn btn-danger btn-sm">Delete</button>
+                        </form>
+                    </div>
+                </div>
+            {% endfor %}
+        </div>
+    </div>
+</body>
+</html>
