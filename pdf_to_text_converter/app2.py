@@ -79,6 +79,7 @@ def extract_text_from_pdf(pdf_file_path, start_page):
 
 
 # Function to handle text-to-speech in chunks
+# Function to handle text-to-speech in chunks
 def text_to_speech_chunked(voice, rate, volume):
     global engine, paused, current_sentence, text_sentences
 
@@ -87,12 +88,16 @@ def text_to_speech_chunked(voice, rate, volume):
     engine.setProperty('rate', rate)
     engine.setProperty('volume', volume)
 
-    while current_sentence < len(text_sentences) and not paused:
+    while current_sentence < len(text_sentences):
+        # Pause check before speaking
+        while paused:
+            time.sleep(0.1)  # Small delay to avoid CPU overconsumption
+
         sentence = text_sentences[current_sentence]
         engine.say(sentence)
         engine.runAndWait()
         current_sentence += 1
-        time.sleep(0.2)
+        time.sleep(0.2)  # Add small delay between sentences
 
 
 @app.route('/', methods=['GET', 'POST'])
@@ -129,6 +134,7 @@ def index():
             text = extract_text_from_pdf(filepath, start_page)
             text_sentences = text.split(". ")
 
+            # Start new thread for text-to-speech
             tts_thread = Thread(target=text_to_speech_chunked, args=(voice, rate, volume))
             tts_thread.start()
 
@@ -136,14 +142,14 @@ def index():
             paused = True
 
         elif action == 'resume':
-            if paused:
-                paused = False
-                voice = request.form['voice']
-                rate = int(request.form['rate'])
-                volume = float(request.form['volume'])
+            paused = False  # Unpause the process
+            voice = request.form['voice']
+            rate = int(request.form['rate'])
+            volume = float(request.form['volume'])
 
-                tts_thread = Thread(target=text_to_speech_chunked, args=(voice, rate, volume))
-                tts_thread.start()
+            # Resume the same thread
+            tts_thread = Thread(target=text_to_speech_chunked, args=(voice, rate, volume))
+            tts_thread.start()
 
         return redirect(url_for('index'))
 
