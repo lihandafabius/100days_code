@@ -1,0 +1,15 @@
+{% extends 'base.html' %}
+{% block content %}
+    <h1 class="text-center">Stock Market Data</h1>
+    <form method="POST" action="/stock">
+        <div class="mb-3">
+            <label for="symbol" class="form-label">Enter Stock Symbol</label>
+            <input type="text" class="form-control" id="symbol" name="symbol" placeholder="e.g., AAPL" required>
+        </div>
+        <button type="submit" class="btn btn-primary">Get Stock Data</button>
+    </form>
+
+    {% if error_message %}
+    <div class="alert alert-danger mt-3">{{ error_message }}</div>
+    {% endif %}
+{% endblock %}

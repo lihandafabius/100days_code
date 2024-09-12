@@ -6,10 +6,10 @@ COMPANY_NAME = "Tesla Inc"
 
 STOCK_ENDPOINT = "https://www.alphavantage.co/query"
 NEWS_ENDPOINT = "https://newsapi.org/v2/everything"
-STOCK_API_KEY = "PWYNRTQ6L2IUPKVT"
-NEWS_API_KEY = "2df5847fa54e4881a90caad4385de4c5"
-account_sid = "AC0c9d8165cc10ca5a15bef271e14044ab"
-auth_token = "366495226daff75811b232dda56199d7"
+STOCK_API_KEY = ""
+NEWS_API_KEY = ""
+account_sid = ""
+auth_token = ""
 # STEP 1: Use https://www.alphavantage.co/documentation/#daily
 # When stock price increase/decreases by 5% between yesterday and the day before yesterday then print("Get News").
 
@@ -54,8 +54,8 @@ if percentage_diff > 0.1:
     for article in formatted_articles:
         message = client.messages.create(
             body=article,
-            from_='+19062144306',
-            to='+254715371294'
+            from_='',
+            to=''
         )
 
 

@@ -1,0 +1,121 @@
+{% extends 'base.html' %}
+{% block content %}
+    <h1 class="text-center">Dashboard for {{ symbol }}</h1>
+
+    <form method="GET" action="/dashboard">
+        <input type="hidden" name="symbol" value="{{ symbol }}">
+        <label for="range">Select Time Range:</label>
+        <select name="range" id="range" class="form-select">
+            <option value="7" {% if time_range == '7' %}selected{% endif %}>Last 7 Days</option>
+            <option value="30" {% if time_range == '30' %}selected{% endif %}>Last 30 Days</option>
+            <option value="90" {% if time_range == '90' %}selected{% endif %}>Last 90 Days</option>
+        </select>
+        <button type="submit" class="btn btn-primary mt-2">Apply</button>
+    </form>
+
+    <div class="row">
+        <!-- Closing Price Line Chart -->
+        <div class="col-md-6">
+            <h3>Closing Price Trend</h3>
+            <canvas id="closingPriceChart"></canvas>
+        </div>
+
+        <!-- Volume Bar Chart -->
+        <div class="col-md-6">
+            <h3>Volume Trend</h3>
+            <canvas id="volumeChart"></canvas>
+        </div>
+    </div>
+
+    <div class="row mt-5">
+        <h3>Predicted Stock Prices for Next 5 Days</h3>
+        <ul>
+            {% for date, price in future_data %}
+            <li>{{ date }}: ${{ price[0] }}</li>
+            {% endfor %}
+        </ul>
+    </div>
+
+    <a href="/stock?symbol={{ symbol }}" class="btn btn-secondary mt-3">Back to Stock Data</a>
+
+    <!-- Include Chart.js -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+    <!-- Script to render the charts -->
+    <script>
+        // Extract the dates, closing prices, and volumes from the data
+        const stockDates = {{ stock_dates | safe }};
+        const stockClosePrices = {{ stock_close_prices | safe }};
+        const stockVolumes = {{ stock_volumes | safe }};
+
+        // Closing Price Line Chart
+        const ctx1 = document.getElementById('closingPriceChart').getContext('2d');
+        const closingPriceChart = new Chart(ctx1, {
+            type: 'line',
+            data: {
+                labels: stockDates,
+                datasets: [{
+                    label: 'Closing Price',
+                    data: stockClosePrices,
+                    borderColor: 'rgba(75, 192, 192, 1)',
+                    backgroundColor: 'rgba(75, 192, 192, 0.2)',
+                    borderWidth: 2,
+                    fill: true,
+                    tension: 0.3
+                }]
+            },
+            options: {
+                scales: {
+                    x: {
+                        title: {
+                            display: true,
+                            text: 'Date'
+                        }
+                    },
+                    y: {
+                        title: {
+                            display: true,
+                            text: 'Closing Price'
+                        }
+                    }
+                },
+                responsive: true,
+                maintainAspectRatio: false
+            }
+        });
+
+        // Volume Bar Chart
+        const ctx2 = document.getElementById('volumeChart').getContext('2d');
+        const volumeChart = new Chart(ctx2, {
+            type: 'bar',
+            data: {
+                labels: stockDates,
+                datasets: [{
+                    label: 'Volume',
+                    data: stockVolumes,
+                    backgroundColor: 'rgba(54, 162, 235, 0.7)',
+                    borderColor: 'rgba(54, 162, 235, 1)',
+                    borderWidth: 1
+                }]
+            },
+            options: {
+                scales: {
+                    x: {
+                        title: {
+                            display: true,
+                            text: 'Date'
+                        }
+                    },
+                    y: {
+                        title: {
+                            display: true,
+                            text: 'Volume'
+                        }
+                    }
+                },
+                responsive: true,
+                maintainAspectRatio: false
+            }
+        });
+    </script>
+{% endblock %}
