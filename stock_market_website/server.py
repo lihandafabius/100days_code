@@ -1,21 +1,21 @@
-from flask import Flask, render_template, request
+from flask import Flask, render_template, request, send_file
 import requests
 from sklearn.linear_model import LinearRegression
 import numpy as np
 import pandas as pd
+import matplotlib.pyplot as plt
+import os
 
 app = Flask(__name__)
 
 # MarketStack API details
-API_KEY = '6bbc4092ff50b0a5eb35ffcdc72eb7e8'
+API_KEY = ''
 BASE_URL = 'http://api.marketstack.com/v1/'
-
 
 # Homepage route
 @app.route('/')
 def index():
     return render_template('index.html')
-
 
 # Search stock data
 @app.route('/stock', methods=['POST'])
@@ -43,7 +43,6 @@ def stock():
         error_message = 'Stock data not found!'
         return render_template('index.html', error_message=error_message)
 
-
 # Dashboard route
 @app.route('/dashboard')
 def dashboard():
@@ -66,39 +65,104 @@ def dashboard():
         # Predict stock prices for the next 5 days
         future_dates, future_prices = predict_stock_prices(stock_dates, stock_close_prices)
 
-        # Combine future_dates and future_prices into a list of tuples
-        future_data = list(zip(future_dates, future_prices))
+        # Plot visualizations (static images)
+        plot_closing_price(stock_dates, stock_close_prices)
+        plot_volume(stock_dates, stock_volumes)
+        plot_boxplot(stock_close_prices)
+        plot_predicted_stock(stock_dates, stock_close_prices, future_dates, future_prices)
 
         return render_template(
             'dashboard.html',
             symbol=symbol,
-            stock_dates=stock_dates,
-            stock_close_prices=stock_close_prices,
-            stock_volumes=stock_volumes,
             time_range=time_range,
-            future_data=future_data  # Pass the combined data
+            future_data=list(zip(future_dates, future_prices))
         )
     else:
         return "Error loading stock data."
 
-
-
 # Prediction function
 def predict_stock_prices(dates, prices):
-    # Convert date strings to a numerical format for model training
     dates = pd.to_datetime(dates).map(lambda date: date.to_julian_date()).values.reshape(-1, 1)
     prices = np.array(prices).reshape(-1, 1)
 
-    # Train the linear regression model
     model = LinearRegression()
     model.fit(dates, prices)
 
     # Predict the next 5 days
-    future_dates = np.array([dates[-1] + i for i in range(1, 6)]).reshape(-1, 1)
+    future_dates = np.array([dates[-1][0] + i for i in range(1, 6)]).reshape(-1, 1)  # Corrected future_dates
     future_prices = model.predict(future_dates)
 
-    return future_dates, future_prices
+    future_dates_converted = pd.to_datetime(future_dates.flatten(), origin='julian', unit='D')  # Fix conversion
 
+    return future_dates_converted.strftime('%Y-%m-%d').tolist(), future_prices.flatten().tolist()
+
+# Add prediction visualization function
+def plot_predicted_stock(dates, prices, future_dates, future_prices):
+    plt.figure(figsize=(10, 6))
+
+    # Convert historical dates to proper datetime format
+    dates_converted = pd.to_datetime(dates)  # Convert historical dates
+
+    # Check if future_dates need to be converted (if they are numeric or a different format)
+    try:
+        future_dates_converted = pd.to_datetime(future_dates)  # Try direct conversion
+    except (ValueError, TypeError):
+        # Handle numeric date formats (if future_dates are in float or int format representing days)
+        future_dates_converted = pd.to_datetime(future_dates, unit='D', origin='1970-01-01')  # Change origin if needed
+
+    # Plot historical data
+    plt.plot(dates_converted, prices, marker='o', linestyle='-', color='b', label='Historical Prices')
+
+    # Plot predicted data
+    plt.plot(future_dates_converted, future_prices, marker='x', linestyle='--', color='r', label='Predicted Prices')
+
+    # Customize plot
+    plt.xlabel('Date')
+    plt.ylabel('Price')
+    plt.title('Stock Price Prediction for Next 5 Days')
+    plt.legend()
+    plt.grid(True)
+    plt.xticks(rotation=45)
+    plt.tight_layout()
+
+    # Save the figure
+    plt.savefig('static/predicted_stock.png')
+    plt.close()
+
+# Plot closing price trend
+def plot_closing_price(dates, prices):
+    plt.figure(figsize=(10, 6))
+    plt.plot(pd.to_datetime(dates), prices, marker='o', linestyle='-', color='b', label='Closing Price')
+    plt.xlabel('Date')
+    plt.ylabel('Closing Price')
+    plt.title('Closing Price Trend')
+    plt.grid(True)
+    plt.xticks(rotation=45)
+    plt.tight_layout()
+    plt.savefig('static/closing_price.png')
+    plt.close()
+
+# Plot volume trend
+def plot_volume(dates, volumes):
+    plt.figure(figsize=(10, 6))
+    plt.bar(pd.to_datetime(dates), volumes, color='g')
+    plt.xlabel('Date')
+    plt.ylabel('Volume')
+    plt.title('Volume Trend')
+    plt.xticks(rotation=45)
+    plt.tight_layout()
+    plt.savefig('static/volume_chart.png')
+    plt.close()
+
+# Plot stock box plot
+def plot_boxplot(prices):
+    plt.figure(figsize=(6, 4))
+    plt.boxplot(prices)
+    plt.title('Stock Closing Price Distribution')
+    plt.savefig('static/boxplot.png')
+    plt.close()
 
 if __name__ == '__main__':
+    if not os.path.exists('static'):
+        os.makedirs('static')
     app.run(debug=True)
