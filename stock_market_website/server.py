@@ -5,6 +5,9 @@ import numpy as np
 import pandas as pd
 import matplotlib.pyplot as plt
 import os
+import base64
+import io
+import plotly.graph_objects as go
 
 app = Flask(__name__)
 
@@ -17,31 +20,40 @@ BASE_URL = 'http://api.marketstack.com/v1/'
 def index():
     return render_template('index.html')
 
+
 # Search stock data
-@app.route('/stock', methods=['POST'])
+@app.route('/stock', methods=['GET', 'POST'])
 def stock():
-    symbol = request.form['symbol']
-    url = f'{BASE_URL}eod?access_key={API_KEY}&symbols={symbol}'
-    response = requests.get(url)
-    data = response.json()
-
-    if 'data' in data:
-        stock_data = data['data']
-
-        # Extract dates and closing prices for trend analysis
-        stock_dates = [stock['date'] for stock in stock_data]
-        stock_close_prices = [stock['close'] for stock in stock_data]
-
-        return render_template(
-            'stock.html',
-            stock_data=stock_data,
-            symbol=symbol,
-            stock_dates=stock_dates,
-            stock_close_prices=stock_close_prices
-        )
+    if request.method == 'POST':
+        symbol = request.form['symbol']
     else:
-        error_message = 'Stock data not found!'
-        return render_template('index.html', error_message=error_message)
+        symbol = request.args.get('symbol')  # For GET request
+
+    if symbol:
+        url = f'{BASE_URL}eod?access_key={API_KEY}&symbols={symbol}'
+        response = requests.get(url)
+        data = response.json()
+
+        if 'data' in data:
+            stock_data = data['data']
+
+            # Extract dates and closing prices for trend analysis
+            stock_dates = [stock['date'] for stock in stock_data]
+            stock_close_prices = [stock['close'] for stock in stock_data]
+
+            return render_template(
+                'stock.html',
+                stock_data=stock_data,
+                symbol=symbol,
+                stock_dates=stock_dates,
+                stock_close_prices=stock_close_prices
+            )
+        else:
+            error_message = 'Stock data not found!'
+            return render_template('index.html', error_message=error_message)
+
+    return "Error: No stock symbol provided."
+
 
 # Dashboard route
 @app.route('/dashboard')
@@ -80,6 +92,58 @@ def dashboard():
     else:
         return "Error loading stock data."
 
+
+
+@app.route('/compare', methods=['POST'])
+def compare_stocks():
+    symbol1 = request.form['symbol1']
+    symbol2 = request.form['symbol2']
+
+    if symbol1 and symbol2:
+        url1 = f'{BASE_URL}eod?access_key={API_KEY}&symbols={symbol1}'
+        url2 = f'{BASE_URL}eod?access_key={API_KEY}&symbols={symbol2}'
+
+        response1 = requests.get(url1)
+        response2 = requests.get(url2)
+
+        data1 = response1.json()
+        data2 = response2.json()
+
+        if 'data' in data1 and 'data' in data2:
+            stock_data1 = data1['data']
+            stock_data2 = data2['data']
+
+            # Extract dates and closing prices
+            dates1 = [stock['date'] for stock in stock_data1]
+            prices1 = [stock['close'] for stock in stock_data1]
+            dates2 = [stock['date'] for stock in stock_data2]
+            prices2 = [stock['close'] for stock in stock_data2]
+
+            # Create a plotly figure
+            fig = go.Figure()
+
+            fig.add_trace(go.Scatter(x=dates1, y=prices1, mode='lines', name=f'{symbol1} Closing Price'))
+            fig.add_trace(go.Scatter(x=dates2, y=prices2, mode='lines', name=f'{symbol2} Closing Price'))
+
+            fig.update_layout(
+                title=f'Stock Price Comparison: {symbol1} vs {symbol2}',
+                xaxis_title='Date',
+                yaxis_title='Closing Price'
+            )
+
+            plot_html = fig.to_html(full_html=False)
+
+            return render_template(
+                'comparison.html',
+                symbol1=symbol1,
+                symbol2=symbol2,
+                plot_html=plot_html
+            )
+        else:
+            error_message = 'Could not retrieve data for one or both stocks.'
+            return render_template('index.html', error_message=error_message)
+
+    return "Error: Stock symbols not provided."
 # Prediction function
 def predict_stock_prices(dates, prices):
     dates = pd.to_datetime(dates).map(lambda date: date.to_julian_date()).values.reshape(-1, 1)
@@ -166,3 +230,5 @@ if __name__ == '__main__':
     if not os.path.exists('static'):
         os.makedirs('static')
     app.run(debug=True)
+
+
