@@ -4,13 +4,7 @@
     <meta charset="UTF-8">
     <title>Title</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
-    <style>
-    .feature-icon {
-      width: 4rem;
-      height: 4rem;
-      border-radius: .75rem;
-    }
-    </style>
+    <link rel="stylesheet" href="styles.css">
 </head>
 <body>
  <div class="container">
@@ -42,6 +36,10 @@
         </li>
       </ul>
       <form class="d-flex" role="search">
+        <input class="form-control me-2" type="search" placeholder="Search" aria-label="Search">
+        <button class="btn btn-outline-success" type="submit">Search</button>
+      </form>
+      <form class="d-flex" role="search">
         <div class="d-flex flex-wrap align-items-center justify-content-center justify-content-lg-start">
         <a href="/" class="d-flex align-items-center mb-2 mb-lg-0 link-body-emphasis text-decoration-none">
           <svg class="bi me-2" width="40" height="32" role="img" aria-label="Bootstrap"><use xlink:href="#bootstrap"></use></svg>
@@ -56,7 +54,8 @@
             </svg>
             Cart
         </button>
-        <button type="button" class="btn btn-primary ms-3">Sign In/Out</button>
+        <a href="/login" class="btn btn-primary ms-3">Sign In</a>
+
 
         </ul>
 
@@ -108,45 +107,48 @@
       <div class="row row-cols-1 row-cols-sm-2 row-cols-md-3 g-3">
         <div class="col">
           <div class="card shadow-sm">
-            <svg class="bd-placeholder-img card-img-top" width="100%" height="225" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Placeholder: Thumbnail" preserveAspectRatio="xMidYMid slice" focusable="false"><title>Placeholder</title><rect width="100%" height="100%" fill="#55595c"></rect><text x="50%" y="50%" fill="#eceeef" dy=".3em">Thumbnail</text></svg>
+            <img src="./puffer.png" class="card-img-top" alt="Product">
             <div class="card-body">
-              <p class="card-text">This is a wider card with supporting text below as a natural lead-in to additional content. This content is a little bit longer.</p>
+              <h5 class="card-title">Product Name</h5>
+              <p class="card-text">This is a detailed description of the product, including key features and benefits.</p>
+              <div class="d-flex justify-content-start rating-stars">
+                  <span class="star" data-value="1">&#9734;</span>
+                  <span class="star" data-value="2">&#9734;</span>
+                  <span class="star" data-value="3">&#9734;</span>
+                  <span class="star" data-value="4">&#9734;</span>
+                  <span class="star" data-value="5">&#9734;</span>
+              </div>
+
               <div class="d-flex justify-content-between align-items-center">
                 <div class="btn-group">
-                  <button type="button" class="btn btn-info">view</button>
+                  <button type="button" class="btn btn-info">View</button>
                   <button type="button" class="btn btn-success">Add to cart</button>
                 </div>
-                <small class="text-body-secondary">9 mins</small>
+                <span class="text-muted">$49.99</span>
               </div>
             </div>
           </div>
         </div>
         <div class="col">
           <div class="card shadow-sm">
-            <svg class="bd-placeholder-img card-img-top" width="100%" height="225" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Placeholder: Thumbnail" preserveAspectRatio="xMidYMid slice" focusable="false"><title>Placeholder</title><rect width="100%" height="100%" fill="#55595c"></rect><text x="50%" y="50%" fill="#eceeef" dy=".3em">Thumbnail</text></svg>
+            <img src="./puffer.png" class="card-img-top" alt="Product">
             <div class="card-body">
-              <p class="card-text">This is a wider card with supporting text below as a natural lead-in to additional content. This content is a little bit longer.</p>
-              <div class="d-flex justify-content-between align-items-center">
-                <div class="btn-group">
-                  <button type="button" class="btn btn-info">view</button>
-                  <button type="button" class="btn btn-success">Add to cart</button>
-                </div>
-                <small class="text-body-secondary">9 mins</small>
+              <h5 class="card-title">Product Name</h5>
+              <p class="card-text">This is a detailed description of the product, including key features and benefits.</p>
+              <div class="d-flex justify-content-start rating-stars">
+                  <span class="star" data-value="1">&#9734;</span>
+                  <span class="star" data-value="2">&#9734;</span>
+                  <span class="star" data-value="3">&#9734;</span>
+                  <span class="star" data-value="4">&#9734;</span>
+                  <span class="star" data-value="5">&#9734;</span>
               </div>
-            </div>
-          </div>
-        </div>
-        <div class="col">
-          <div class="card shadow-sm">
-            <svg class="bd-placeholder-img card-img-top" width="100%" height="225" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Placeholder: Thumbnail" preserveAspectRatio="xMidYMid slice" focusable="false"><title>Placeholder</title><rect width="100%" height="100%" fill="#55595c"></rect><text x="50%" y="50%" fill="#eceeef" dy=".3em">Thumbnail</text></svg>
-            <div class="card-body">
-              <p class="card-text">This is a wider card with supporting text below as a natural lead-in to additional content. This content is a little bit longer.</p>
+
               <div class="d-flex justify-content-between align-items-center">
                 <div class="btn-group">
-                  <button type="button" class="btn btn-info">view</button>
+                  <button type="button" class="btn btn-info">View</button>
                   <button type="button" class="btn btn-success">Add to cart</button>
                 </div>
-                <small class="text-body-secondary">9 mins</small>
+                <span class="text-muted">$49.99</span>
               </div>
             </div>
           </div>
@@ -154,45 +156,25 @@
 
         <div class="col">
           <div class="card shadow-sm">
-            <svg class="bd-placeholder-img card-img-top" width="100%" height="225" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Placeholder: Thumbnail" preserveAspectRatio="xMidYMid slice" focusable="false"><title>Placeholder</title><rect width="100%" height="100%" fill="#55595c"></rect><text x="50%" y="50%" fill="#eceeef" dy=".3em">Thumbnail</text></svg>
+            <img src="./puffer.png" class="card-img-top" alt="Product">
             <div class="card-body">
-              <p class="card-text">This is a wider card with supporting text below as a natural lead-in to additional content. This content is a little bit longer.</p>
-              <div class="d-flex justify-content-between align-items-center">
-                <div class="btn-group">
-                  <button type="button" class="btn btn-info">view</button>
-                  <button type="button" class="btn btn-success">Add to cart</button>
-                </div>
-                <small class="text-body-secondary">9 mins</small>
+              <h5 class="card-title">Product Name</h5>
+              <p class="card-text">This is a detailed description of the product, including key features and benefits.</p>
+              <!-- Rating stars section -->
+              <div class="d-flex justify-content-start rating-stars">
+                  <span class="star" data-value="1">&#9734;</span>
+                  <span class="star" data-value="2">&#9734;</span>
+                  <span class="star" data-value="3">&#9734;</span>
+                  <span class="star" data-value="4">&#9734;</span>
+                  <span class="star" data-value="5">&#9734;</span>
               </div>
-            </div>
-          </div>
-        </div>
-        <div class="col">
-          <div class="card shadow-sm">
-            <svg class="bd-placeholder-img card-img-top" width="100%" height="225" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Placeholder: Thumbnail" preserveAspectRatio="xMidYMid slice" focusable="false"><title>Placeholder</title><rect width="100%" height="100%" fill="#55595c"></rect><text x="50%" y="50%" fill="#eceeef" dy=".3em">Thumbnail</text></svg>
-            <div class="card-body">
-              <p class="card-text">This is a wider card with supporting text below as a natural lead-in to additional content. This content is a little bit longer.</p>
+
               <div class="d-flex justify-content-between align-items-center">
                 <div class="btn-group">
-                  <button type="button" class="btn btn-info">view</button>
+                  <button type="button" class="btn btn-info">View</button>
                   <button type="button" class="btn btn-success">Add to cart</button>
                 </div>
-                <small class="text-body-secondary">9 mins</small>
-              </div>
-            </div>
-          </div>
-        </div>
-        <div class="col">
-          <div class="card shadow-sm">
-            <svg class="bd-placeholder-img card-img-top" width="100%" height="225" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Placeholder: Thumbnail" preserveAspectRatio="xMidYMid slice" focusable="false"><title>Placeholder</title><rect width="100%" height="100%" fill="#55595c"></rect><text x="50%" y="50%" fill="#eceeef" dy=".3em">Thumbnail</text></svg>
-            <div class="card-body">
-              <p class="card-text">This is a wider card with supporting text below as a natural lead-in to additional content. This content is a little bit longer.</p>
-              <div class="d-flex justify-content-between align-items-center">
-                <div class="btn-group">
-                  <button type="button" class="btn btn-info">view</button>
-                  <button type="button" class="btn btn-success">Add to cart</button>
-                </div>
-                <small class="text-body-secondary">9 mins</small>
+                <span class="text-muted">$49.99</span>
               </div>
             </div>
           </div>
@@ -200,45 +182,146 @@
 
         <div class="col">
           <div class="card shadow-sm">
-            <svg class="bd-placeholder-img card-img-top" width="100%" height="225" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Placeholder: Thumbnail" preserveAspectRatio="xMidYMid slice" focusable="false"><title>Placeholder</title><rect width="100%" height="100%" fill="#55595c"></rect><text x="50%" y="50%" fill="#eceeef" dy=".3em">Thumbnail</text></svg>
+            <img src="./puffer.png" class="card-img-top" alt="Product">
             <div class="card-body">
-              <p class="card-text">This is a wider card with supporting text below as a natural lead-in to additional content. This content is a little bit longer.</p>
+              <h5 class="card-title">Product Name</h5>
+              <p class="card-text">This is a detailed description of the product, including key features and benefits.</p>
+              <div class="d-flex justify-content-start rating-stars">
+                  <span class="star" data-value="1">&#9734;</span>
+                  <span class="star" data-value="2">&#9734;</span>
+                  <span class="star" data-value="3">&#9734;</span>
+                  <span class="star" data-value="4">&#9734;</span>
+                  <span class="star" data-value="5">&#9734;</span>
+              </div>
+
+
               <div class="d-flex justify-content-between align-items-center">
                 <div class="btn-group">
-                  <button type="button" class="btn btn-info">view</button>
+                  <button type="button" class="btn btn-info">View</button>
                   <button type="button" class="btn btn-success">Add to cart</button>
                 </div>
-                <small class="text-body-secondary">9 mins</small>
+                <span class="text-muted">$49.99</span>
               </div>
             </div>
           </div>
         </div>
         <div class="col">
           <div class="card shadow-sm">
-            <svg class="bd-placeholder-img card-img-top" width="100%" height="225" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Placeholder: Thumbnail" preserveAspectRatio="xMidYMid slice" focusable="false"><title>Placeholder</title><rect width="100%" height="100%" fill="#55595c"></rect><text x="50%" y="50%" fill="#eceeef" dy=".3em">Thumbnail</text></svg>
+            <img src="./puffer.png" class="card-img-top" alt="Product">
             <div class="card-body">
-              <p class="card-text">This is a wider card with supporting text below as a natural lead-in to additional content. This content is a little bit longer.</p>
+              <h5 class="card-title">Product Name</h5>
+              <p class="card-text">This is a detailed description of the product, including key features and benefits.</p>
+              <div class="d-flex justify-content-start rating-stars">
+                  <span class="star" data-value="1">&#9734;</span>
+                  <span class="star" data-value="2">&#9734;</span>
+                  <span class="star" data-value="3">&#9734;</span>
+                  <span class="star" data-value="4">&#9734;</span>
+                  <span class="star" data-value="5">&#9734;</span>
+              </div>
+
               <div class="d-flex justify-content-between align-items-center">
                 <div class="btn-group">
-                  <button type="button" class="btn btn-info">view</button>
+                  <button type="button" class="btn btn-info">View</button>
                   <button type="button" class="btn btn-success">Add to cart</button>
                 </div>
-                <small class="text-body-secondary">9 mins</small>
+                <span class="text-muted">$49.99</span>
               </div>
             </div>
           </div>
         </div>
         <div class="col">
           <div class="card shadow-sm">
-            <svg class="bd-placeholder-img card-img-top" width="100%" height="225" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Placeholder: Thumbnail" preserveAspectRatio="xMidYMid slice" focusable="false"><title>Placeholder</title><rect width="100%" height="100%" fill="#55595c"></rect><text x="50%" y="50%" fill="#eceeef" dy=".3em">Thumbnail</text></svg>
+            <img src="./puffer.png" class="card-img-top" alt="Product">
             <div class="card-body">
-              <p class="card-text">This is a wider card with supporting text below as a natural lead-in to additional content. This content is a little bit longer.</p>
+              <h5 class="card-title">Product Name</h5>
+              <p class="card-text">This is a detailed description of the product, including key features and benefits.</p>
+              <div class="d-flex justify-content-start rating-stars">
+                  <span class="star" data-value="1">&#9734;</span>
+                  <span class="star" data-value="2">&#9734;</span>
+                  <span class="star" data-value="3">&#9734;</span>
+                  <span class="star" data-value="4">&#9734;</span>
+                  <span class="star" data-value="5">&#9734;</span>
+              </div>
+
               <div class="d-flex justify-content-between align-items-center">
                 <div class="btn-group">
-                  <button type="button" class="btn btn-info">view</button>
+                  <button type="button" class="btn btn-info">View</button>
                   <button type="button" class="btn btn-success">Add to cart</button>
                 </div>
-                <small class="text-body-secondary">9 mins</small>
+                <span class="text-muted">$49.99</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="col">
+          <div class="card shadow-sm">
+            <img src="./puffer.png" class="card-img-top" alt="Product">
+            <div class="card-body">
+              <h5 class="card-title">Product Name</h5>
+              <p class="card-text">This is a detailed description of the product, including key features and benefits.</p>
+              <div class="d-flex justify-content-start rating-stars">
+                  <span class="star" data-value="1">&#9734;</span>
+                  <span class="star" data-value="2">&#9734;</span>
+                  <span class="star" data-value="3">&#9734;</span>
+                  <span class="star" data-value="4">&#9734;</span>
+                  <span class="star" data-value="5">&#9734;</span>
+              </div>
+
+              <div class="d-flex justify-content-between align-items-center">
+                <div class="btn-group">
+                  <button type="button" class="btn btn-info">View</button>
+                  <button type="button" class="btn btn-success">Add to cart</button>
+                </div>
+                <span class="text-muted">$49.99</span>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="col">
+          <div class="card shadow-sm">
+            <img src="./puffer.png" class="card-img-top" alt="Product">
+            <div class="card-body">
+              <h5 class="card-title">Product Name</h5>
+              <p class="card-text">This is a detailed description of the product, including key features and benefits.</p>
+              <div class="d-flex justify-content-start rating-stars">
+                  <span class="star" data-value="1">&#9734;</span>
+                  <span class="star" data-value="2">&#9734;</span>
+                  <span class="star" data-value="3">&#9734;</span>
+                  <span class="star" data-value="4">&#9734;</span>
+                  <span class="star" data-value="5">&#9734;</span>
+              </div>
+
+              <div class="d-flex justify-content-between align-items-center">
+                <div class="btn-group">
+                  <button type="button" class="btn btn-info">View</button>
+                  <button type="button" class="btn btn-success">Add to cart</button>
+                </div>
+                <span class="text-muted">$49.99</span>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="col">
+          <div class="card shadow-sm">
+            <img src="./puffer.png" class="card-img-top" alt="Product">
+            <div class="card-body">
+              <h5 class="card-title">Product Name</h5>
+              <p class="card-text">This is a detailed description of the product, including key features and benefits.</p>
+              <div class="d-flex justify-content-start rating-stars">
+                  <span class="star" data-value="1">&#9734;</span>
+                  <span class="star" data-value="2">&#9734;</span>
+                  <span class="star" data-value="3">&#9734;</span>
+                  <span class="star" data-value="4">&#9734;</span>
+                  <span class="star" data-value="5">&#9734;</span>
+              </div>
+
+              <div class="d-flex justify-content-between align-items-center">
+                <div class="btn-group">
+                  <button type="button" class="btn btn-info">View</button>
+                  <button type="button" class="btn btn-success">Add to cart</button>
+                </div>
+                <span class="text-muted">$49.99</span>
               </div>
             </div>
           </div>
@@ -250,30 +333,29 @@
   <footer class="py-5">
     <div class="row">
       <div class="col-6 col-md-2 mb-3">
-        <h5>Section</h5>
+        <h5>Company</h5>
         <ul class="nav flex-column">
-          <li class="nav-item mb-2"><a href="#" class="nav-link p-0 text-body-secondary">Home</a></li>
-          <li class="nav-item mb-2"><a href="#" class="nav-link p-0 text-body-secondary">Features</a></li>
-          <li class="nav-item mb-2"><a href="#" class="nav-link p-0 text-body-secondary">Pricing</a></li>
+          <li class="nav-item mb-2"><a href="#" class="nav-link p-0 text-muted">About</a></li>
+          <li class="nav-item mb-2"><a href="#" class="nav-link p-0 text-muted">Careers</a></li>
+          <li class="nav-item mb-2"><a href="#" class="nav-link p-0 text-muted">Privacy Policy</a></li>
         </ul>
       </div>
 
       <div class="col-6 col-md-2 mb-3">
-        <h5>Section</h5>
+        <h5>About</h5>
         <ul class="nav flex-column">
-          <li class="nav-item mb-2"><a href="#" class="nav-link p-0 text-body-secondary">Home</a></li>
-          <li class="nav-item mb-2"><a href="#" class="nav-link p-0 text-body-secondary">Features</a></li>
-          <li class="nav-item mb-2"><a href="#" class="nav-link p-0 text-body-secondary">Pricing</a></li>
+          <li class="nav-item mb-2"><a href="#" class="nav-link p-0 text-body-secondary">Our Story</a></li>
+          <li class="nav-item mb-2"><a href="#" class="nav-link p-0 text-body-secondary">Terms</a></li>
+          <li class="nav-item mb-2"><a href="#" class="nav-link p-0 text-body-secondary">Support Us</a></li>
 
         </ul>
       </div>
 
       <div class="col-6 col-md-2 mb-3">
-        <h5>Section</h5>
+        <h5>Contact Us</h5>
         <ul class="nav flex-column">
-          <li class="nav-item mb-2"><a href="#" class="nav-link p-0 text-body-secondary">Home</a></li>
-          <li class="nav-item mb-2"><a href="#" class="nav-link p-0 text-body-secondary">Features</a></li>
-          <li class="nav-item mb-2"><a href="#" class="nav-link p-0 text-body-secondary">Pricing</a></li>
+          <li class="nav-item mb-2"><a href="#" class="nav-link p-0 text-body-secondary">Help Center</a></li>
+          <li class="nav-item mb-2"><a href="#" class="nav-link p-0 text-body-secondary">Shipping</a></li>
         </ul>
       </div>
 
@@ -291,7 +373,7 @@
     </div>
 
     <div class="d-flex flex-column flex-sm-row justify-content-between py-4 my-4 border-top">
-      <p>© 2024 Company, Inc. All rights reserved.</p>
+      <p>© 2024 Bitbanta, Inc. All rights reserved.</p>
       <ul class="list-unstyled d-flex">
         <li class="ms-3"><a class="link-body-emphasis" href="#"><svg class="bi" width="24" height="24"><use xlink:href="#twitter"></use></svg></a></li>
         <li class="ms-3"><a class="link-body-emphasis" href="#"><svg class="bi" width="24" height="24"><use xlink:href="#instagram"></use></svg></a></li>
@@ -301,5 +383,6 @@
   </footer>
 </div>
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
+<script src="script.js"></script>
 </body>
 </html>

@@ -1,0 +1,35 @@
+/* styles.css */
+.sign-in-page {
+    height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background-color: var(--bs-body-bg);
+}
+
+main.form-signin {
+    width: 100%; /* Ensure the form can expand */
+    max-width: 400px; /* Increase width as desired */
+    padding: 30px; /* Add more padding for space */
+    border-radius: 8px;
+    box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
+    margin: auto;
+    background-color: white;
+}
+
+.dropdown-menu {
+    right: 0;
+    left: auto;
+}
+/* styles.css */
+
+.star {
+    font-size: 2em;
+    cursor: pointer;
+    transition: color 0.2s;
+}
+
+.star:hover,
+.star.selected {
+    color: gold;
+}
