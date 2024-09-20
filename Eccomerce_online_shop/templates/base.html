@@ -18,6 +18,18 @@
     {% block extra_css %}{% endblock %}
   </head>
   <body>
+      <!-- Flash messages block -->
+    {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}
+            <div>
+                {% for category, message in messages %}
+                    <div class="alert alert-{{ category }}">
+                        {{ message }}
+                    </div>
+                {% endfor %}
+            </div>
+        {% endif %}
+    {% endwith %}
     <div class="container">
       <nav class="navbar navbar-expand-lg bg-body-tertiary">
         <div class="container-fluid">
@@ -126,18 +138,17 @@
                     </svg>
                     Cart
                   </button>
-                  {% if session.get('user') %}
-                    <a href="/logout" class="btn btn-secondary ms-3">Log Out</a>
-                  {% else %}
-                    <a href="/login" class="btn btn-primary ms-3">Sign In</a>
-                  {% endif %}
+                    {% if session.get('user') %}
+                        <a href="/logout" class="btn btn-secondary ms-3">Log Out</a>
+                    {% else %}
+                        <a href="/login" class="btn btn-primary ms-3">Sign In</a>
+                    {% endif %}
                 </ul>
               </div>
             </form>
           </div>
         </div>
       </nav>
-
       <!-- Theme toggle button -->
       <div
         class="dropdown position-fixed bottom-0 end-0 mb-3 me-3 bd-mode-toggle"
@@ -317,6 +328,7 @@
         </footer>
       </div>
       <!-- Bootstrap JS and theme toggle functionality -->
+
       <script
         src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"
         integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz"
@@ -324,6 +336,7 @@
       ></script>
       <script src="{{ url_for('static', filename='js/rate.js') }}"></script>
       <script src="{{ url_for('static', filename='js/theme_toggle.js') }}"></script>
+      <script src="{{ url_for('static', filename='js/custom.js') }}"></script>
       <!-- Icons for dark/light theme -->
       <svg xmlns="http://www.w3.org/2000/svg" class="d-none">
         <symbol id="sun-fill" viewBox="0 0 16 16">

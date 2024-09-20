@@ -33,3 +33,26 @@ main.form-signin {
 .star.selected {
     color: gold;
 }
+
+/* static/style.css */
+body {
+  font-family: Arial, sans-serif;
+}
+
+.product {
+  display: flex;
+  justify-content: center;
+  margin-top: 50px;
+}
+
+.product img {
+  width: 150px;
+  height: auto;
+  margin-right: 20px;
+}
+
+.product .description {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
