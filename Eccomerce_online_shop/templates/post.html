@@ -1,56 +1,25 @@
-{% from "bootstrap5/form.html" import render_form %}
+<form method="POST" enctype="multipart/form-data" action="{{ url_for('add_product') }}">
+  {{ form.hidden_tag() }}
 
-<!-- Page Header-->
-<header class="masthead" style="background-image: url('{{ product.img_url }}')">
-  <div class="container position-relative px-4 px-lg-5">
-    <div class="row gx-4 gx-lg-5 justify-content-center">
-      <div class="col-md-10 col-lg-8 col-xl-7">
-        <div class="product-heading">
-          <h1>{{ product.name }}</h1>
-          <h2 class="subheading">{{ product.subtitle }}</h2>
-          <span class="meta">Price: ${{ product.price }}</span>
-        </div>
-      </div>
-    </div>
+  <div class="form-group mt-3">
+    <label for="product_name">Product Name</label>
+    {{ form.product_name(class="form-control", placeholder="Enter product name") }}
   </div>
-</header>
 
-<!-- Product Content -->
-<article>
-  <div class="container px-4 px-lg-5">
-    <div class="row gx-4 gx-lg-5 justify-content-center">
-      <div class="col-md-10 col-lg-8 col-xl-7">
-        <div class="product-description">
-          {{ product.description | safe }}
-        </div>
-
-        <!-- Edit Product button for admin users -->
-        {% if current_user.is_admin %}
-        <div class="d-flex justify-content-end mb-4">
-          <a class="btn btn-primary float-right" href="{{ url_for('edit_product', product_id=product.id) }}">Edit Product</a>
-        </div>
-        {% endif %}
-
-        <!-- Related Products -->
-        <h3>Related Products</h3>
-        <div class="row gx-4 gx-lg-5 justify-content-center">
-          {% for related_product in related_products %}
-          <div class="col-md-4 col-lg-3 mb-5">
-            <div class="card h-100">
-              <img class="card-img-top" src="{{ related_product.img_url }}" alt="Related product image">
-              <div class="card-body">
-                <h5 class="card-title">{{ related_product.name }}</h5>
-                <p class="card-text">{{ related_product.short_description }}</p>
-              </div>
-              <div class="card-footer">
-                <a href="{{ url_for('view_product', product_id=related_product.id) }}" class="btn btn-primary">View Product</a>
-              </div>
-            </div>
-          </div>
-          {% endfor %}
-        </div>
-      </div>
-    </div>
+  <div class="form-group mt-3">
+    <label for="product_price">Price</label>
+    {{ form.product_price(class="form-control", placeholder="Enter product price") }}
   </div>
-</article>
 
+  <div class="form-group mt-3">
+    <label for="product_image">Product Image</label>
+    {{ form.product_image(class="form-control-file") }}
+  </div>
+
+  <div class="form-group mt-3">
+    <label for="product_description">Description</label>
+    {{ form.product_description(class="form-control") }}
+  </div>
+
+  <button type="submit" class="btn btn-primary mt-3">Post Product</button>
+</form>
