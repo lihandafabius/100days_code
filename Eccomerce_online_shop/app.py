@@ -9,6 +9,7 @@ from config import Config
 import stripe
 from datetime import datetime
 from werkzeug.utils import secure_filename
+from flask_ckeditor import CKEditor
 
 # Initialize extensions
 db = SQLAlchemy()
@@ -21,6 +22,7 @@ migrate = Migrate()
 # Create the app
 def create_app():
     app = Flask(__name__)
+    ckeditor = CKEditor(app)
     app.config.from_object(Config)
 
     # Initialize the extensions
@@ -109,7 +111,7 @@ def create_app():
 
             # Add product to database (pseudo-code)
             new_product = Product(name=product_name, price=product_price, description=product_description,
-                                  image_file=image_file)
+                                  image=image_file)
             db.session.add(new_product)
             db.session.commit()
 
@@ -148,6 +150,16 @@ def create_app():
             form.product_description.data = product.description
 
         return render_template('edit_product.html', form=form, product=product)
+
+    @app.route("/product/delete/<int:product_id>", methods=['POST'])
+    @login_required
+    @admin_required
+    def delete_product(product_id):
+        product = Product.query.get_or_404(product_id)
+        db.session.delete(product)
+        db.session.commit()
+        flash(f'Product {product.name} deleted successfully!', 'success')
+        return redirect(url_for('home'))
 
     @app.route('/handle_flash')
     def handle_flash():
@@ -295,9 +307,10 @@ class Product(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(100), nullable=False)
     price = db.Column(db.Float, nullable=False)
-    description = db.Column(db.Text, nullable=False)  # New description field
-    image_file = db.Column(db.String(120), nullable=True)
+    description = db.Column(db.String(255), nullable=False)
+    image = db.Column(db.String(100), nullable=False)
 
+    cart_items = db.relationship('CartItem', backref='product', cascade='all, delete-orphan')
 
 class CartItem(db.Model):
     id = db.Column(db.Integer, primary_key=True)
@@ -305,8 +318,8 @@ class CartItem(db.Model):
     product_id = db.Column(db.Integer, db.ForeignKey('product.id'), nullable=False)
     quantity = db.Column(db.Integer, nullable=False, default=1)
 
-    product = db.relationship('Product', backref='cart_items')
     user = db.relationship('User', backref='cart_items')
+
 
 if __name__ == '__main__':
     app = create_app()

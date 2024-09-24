@@ -1,3 +1,6 @@
+{% extends "base.html" %}
+
+{% block content %}
 <form method="POST" enctype="multipart/form-data" action="{{ url_for('add_product') }}">
   {{ form.hidden_tag() }}
 
@@ -18,8 +21,9 @@
 
   <div class="form-group mt-3">
     <label for="product_description">Description</label>
-    {{ form.product_description(class="form-control") }}
+    {{ form.product_description() }}  <!-- Render CKEditorField -->
   </div>
 
   <button type="submit" class="btn btn-primary mt-3">Post Product</button>
 </form>
+{% endblock %}

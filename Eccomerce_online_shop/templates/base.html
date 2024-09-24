@@ -4,6 +4,8 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>{% block title %}My Website{% endblock %}</title>
+    {{ ckeditor.load() }}  <!-- This loads the CKEditor script -->
+    {{ ckeditor.config(name='form.product_description') }}
     <link
       rel="stylesheet"
       href="{{ url_for('static', filename='css/styles.css') }}"
