@@ -10,6 +10,7 @@ import stripe
 from datetime import datetime
 from werkzeug.utils import secure_filename
 from flask_ckeditor import CKEditor
+import bleach
 
 # Initialize extensions
 db = SQLAlchemy()
@@ -102,14 +103,16 @@ def create_app():
         if form.validate_on_submit():
             product_name = form.product_name.data
             product_price = form.product_price.data
-            product_description = form.product_description.data
+
+            # Strip HTML tags from the description to prevent storing HTML
+            product_description = bleach.clean(form.product_description.data, tags=[], strip=True)
 
             # Save image
             if form.product_image.data:
                 image_file = secure_filename(form.product_image.data.filename)
                 form.product_image.data.save(os.path.join(app.root_path, 'static/images', image_file))
 
-            # Add product to database (pseudo-code)
+            # Add product to database
             new_product = Product(name=product_name, price=product_price, description=product_description,
                                   image=image_file)
             db.session.add(new_product)
@@ -131,7 +134,9 @@ def create_app():
             # Update product details
             product.name = form.product_name.data
             product.price = form.product_price.data
-            product.description = form.product_description.data
+
+            # Strip HTML tags from the description to prevent storing HTML
+            product.description = bleach.clean(form.product_description.data, tags=[], strip=True)
 
             # Save the new image if uploaded
             if form.product_image.data:
@@ -206,31 +211,61 @@ def create_app():
     def checkout():
         cart_items = CartItem.query.filter_by(user_id=current_user.id).all()
         total_price = sum(item.product.price * item.quantity for item in cart_items)
-        return render_template('checkout.html', total_price=total_price)
+
+        line_items = [
+            {
+                'name': item.product.name,
+                'description': item.product.description,
+                'price': item.product.price,
+                'quantity': item.quantity,
+                'image_url': url_for('static', filename=f'images/{item.product.image}', _external=True)
+            }
+            for item in cart_items
+        ]
+
+        return render_template('checkout.html', line_items=line_items, total_price=total_price)
 
     @app.route('/create-checkout-session', methods=['POST'])
     @login_required
     def create_checkout_session():
-        cart_items = CartItem.query.filter_by(user_id=current_user.id).all()
-        line_items = [
-            {
-                'price_data': {
-                    'currency': 'usd',
-                    'product_data': {'name': item.product.name},
-                    'unit_amount': int(item.product.price * 100),
-                },
-                'quantity': item.quantity,
-            }
-            for item in cart_items
-        ]
-        checkout_session = stripe.checkout.Session.create(
-            payment_method_types=['card'],
-            line_items=line_items,
-            mode='payment',
-            success_url=url_for('success', _external=True),
-            cancel_url=url_for('cancel', _external=True),
-        )
-        return jsonify({'id': checkout_session.id})
+        try:
+            # Fetch the cart items for the current user
+            cart_items = CartItem.query.filter_by(user_id=current_user.id).all()
+
+            # If no items in the cart, return an error
+            if not cart_items:
+                return jsonify({'error': 'Your cart is empty.'}), 400
+
+            # Prepare line items for Stripe checkout session
+            line_items = [
+                {
+                    'price_data': {
+                        'currency': 'usd',
+                        'product_data': {
+                            'name': item.product.name,
+                        },
+                        'unit_amount': int(item.product.price * 100),  # Stripe accepts amounts in cents
+                    },
+                    'quantity': item.quantity,
+                }
+                for item in cart_items
+            ]
+
+            # Create a Stripe checkout session
+            checkout_session = stripe.checkout.Session.create(
+                payment_method_types=['card'],
+                line_items=line_items,
+                mode='payment',
+                success_url=url_for('success', _external=True),
+                cancel_url=url_for('cancel', _external=True),
+            )
+
+            # Return the session ID to the frontend
+            return jsonify({'id': checkout_session.id})
+
+        except Exception as e:
+            # Handle any errors that occur
+            return jsonify({'error': str(e)}), 500
 
     @app.route('/success')
     def success():
@@ -308,7 +343,7 @@ class Product(db.Model):
     name = db.Column(db.String(100), nullable=False)
     price = db.Column(db.Float, nullable=False)
     description = db.Column(db.String(255), nullable=False)
-    image = db.Column(db.String(100), nullable=False)
+    image = db.Column(db.String(100), nullable=False, default='default.jpg')
 
     cart_items = db.relationship('CartItem', backref='product', cascade='all, delete-orphan')
 
