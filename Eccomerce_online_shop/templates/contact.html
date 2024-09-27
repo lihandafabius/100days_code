@@ -74,14 +74,15 @@
               <label for="phone">Phone Number</label>
             </div>
             <div class="form-floating">
-              <textarea
-                class="form-control"
+               <textarea
+                class="form-control ckeditor"
                 id="message"
                 name="message"
                 placeholder="Enter your message here..."
                 required
-                style="height: 12rem"
-              ></textarea>
+                style="height: 12rem">
+               </textarea>
+
               <label for="message">Message</label>
             </div>
             <br />
@@ -97,5 +98,13 @@
     </div>
   </div>
 </main>
+<!-- CKEditor Script -->
+<script>
+  ClassicEditor
+      .create(document.querySelector('.ckeditor'))
+      .catch(error => {
+          console.error(error);
+      });
+</script>
 {% endblock %}
 

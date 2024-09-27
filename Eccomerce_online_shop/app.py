@@ -38,6 +38,15 @@ def create_app():
     with app.app_context():
         db.create_all()
 
+    @app.context_processor
+    def cart_item_count():
+        if current_user.is_authenticated:
+            cart_items = CartItem.query.filter_by(user_id=current_user.id).all()
+            cart_item_count = sum(item.quantity for item in cart_items)
+        else:
+            cart_item_count = 0
+        return dict(cart_item_count=cart_item_count)
+
     # Routes
     @app.route("/")
     @app.route("/home")
@@ -178,7 +187,9 @@ def create_app():
     def cart():
         cart_items = CartItem.query.filter_by(user_id=current_user.id).all()
         total_price = sum(item.product.price * item.quantity for item in cart_items)
-        return render_template('cart.html', cart_items=cart_items, total_price=total_price)
+        cart_item_count = sum(item.quantity for item in cart_items)  # Count total items in the cart
+        return render_template('cart.html', cart_items=cart_items, total_price=total_price,
+                               cart_item_count=cart_item_count)
 
     @app.route("/add_to_cart/<int:product_id>", methods=['POST'])
     @login_required
@@ -279,9 +290,31 @@ def create_app():
     def about():
         return render_template('about.html', title='About')
 
-    @app.route("/contact")
+    from flask import render_template, request
+    import bleach
+
+    @app.route("/contact", methods=['GET', 'POST'])
     def contact():
-        return render_template('contact.html', title='Contact')
+        msg_sent = False
+        if request.method == 'POST':
+            # Get form data
+            name = request.form.get('name')
+            email = request.form.get('email')
+            phone = request.form.get('phone')
+
+            # Clean message input using bleach, allowing specific HTML tags
+            allowed_tags = ['b', 'i', 'u', 'strong', 'em', 'p', 'br']
+            message = bleach.clean(request.form.get('message'), tags=allowed_tags, strip=True)
+
+            # Save contact message to the database
+            new_message = ContactMessage(name=name, email=email, phone=phone, message=message)
+            db.session.add(new_message)
+            db.session.commit()
+
+            # Set success flag
+            msg_sent = True
+
+        return render_template('contact.html', msg_sent=msg_sent)
 
     return app
 
@@ -324,6 +357,17 @@ class ProductForm(FlaskForm):
     product_price = DecimalField('Product Price', validators=[DataRequired()])
     product_image = FileField('Product Image', validators=[DataRequired()])
     product_description = CKEditorField('Product Description', validators=[DataRequired()])
+
+
+
+class ContactMessage(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    name = db.Column(db.String(100), nullable=False)
+    email = db.Column(db.String(120), nullable=False)
+    phone = db.Column(db.String(20), nullable=False)
+    message = db.Column(db.Text, nullable=False)
+    date_sent = db.Column(db.DateTime, nullable=False, default=datetime.utcnow)
+
 
 # Models (User, Product, CartItem)
 @login_manager.user_loader
