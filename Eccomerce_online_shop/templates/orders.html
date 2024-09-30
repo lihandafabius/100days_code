@@ -1,0 +1,37 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="container-fluid">
+  <div class="row">
+    <div class="col">
+      <h1>Orders</h1>
+      <p>Manage and review all customer orders here.</p>
+
+      <table class="table table-striped">
+        <thead>
+          <tr>
+            <th>#</th>
+            <th>Order ID</th>
+            <th>Customer</th>
+            <th>Status</th>
+            <th>Total</th>
+            <th>Date</th>
+          </tr>
+        </thead>
+        <tbody>
+          <!-- Loop through orders and display here -->
+          <tr>
+            <td>1</td>
+            <td>ORD-1001</td>
+            <td>John Doe</td>
+            <td>Shipped</td>
+            <td>$150</td>
+            <td>2024-09-25</td>
+          </tr>
+          <!-- More rows as needed -->
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
+{% endblock %}

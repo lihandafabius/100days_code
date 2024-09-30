@@ -1,0 +1,110 @@
+{% extends "base.html" %}
+
+{% block title %}Checkout{% endblock %}
+
+{% block content %}
+<section>
+  <h2>Checkout</h2>
+
+  {% if line_items %}
+    <div class="products">
+      {% for item in line_items %}
+        <div class="product">
+          <img src="{{ item.image_url }}" alt="Image of {{ item.name }}" />
+          <div class="description">
+            <h3>{{ item.name }}</h3>
+            <p>{{ item.description }}</p>
+            <h5>Price: ${{ item.price }}</h5>
+            <h5>Quantity: {{ item.quantity }}</h5>
+          </div>
+        </div>
+      {% endfor %}
+    </div>
+    <h4>Total Price: ${{ total_price }}</h4>
+  {% else %}
+    <p>Your cart is empty.</p>
+  {% endif %}
+
+  <!-- Form for payment -->
+  <form id="checkout-form">
+    <label for="phone-number">Enter your Mpesa Phone Number (for Mpesa payments):</label>
+    <input type="tel" id="phone-number" name="phone_number" placeholder="07XXXXXXXX" required>
+    <br><br>
+
+    <!-- Payment Method Selection -->
+    <label for="payment-method">Choose Payment Method:</label><br>
+    <input type="radio" id="mpesa" name="payment_method" value="mpesa" required>
+    <label for="mpesa">Mpesa</label><br>
+    <input type="radio" id="stripe" name="payment_method" value="stripe" required>
+    <label for="stripe">Stripe</label>
+    <br><br>
+
+    <button id="checkout-button" class="btn btn-primary">Proceed to Payment</button>
+  </form>
+</section>
+
+<script src="https://js.stripe.com/v3/"></script>
+<script type="text/javascript">
+  var stripe = Stripe('{{ STRIPE_PUBLIC_KEY }}');  // Use the public key from your config
+  var checkoutButton = document.getElementById('checkout-button');
+
+  checkoutButton.addEventListener('click', function (e) {
+    e.preventDefault();  // Prevent form from submitting normally
+
+    var phoneNumber = document.getElementById('phone-number').value;
+    var paymentMethod = document.querySelector('input[name="payment_method"]:checked').value;
+
+    if (!paymentMethod) {
+      alert('Please select a payment method.');
+      return;
+    }
+
+    if (paymentMethod === 'mpesa') {
+      if (!phoneNumber) {
+        alert('Please enter your Mpesa phone number.');
+        return;
+      }
+
+      fetch('/mpesa-checkout-session', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ phone_number: phoneNumber }),
+      })
+      .then(function (response) {
+        return response.json();
+      })
+      .then(function (data) {
+        alert('Mpesa request sent. Please confirm the payment on your phone.');
+      })
+      .catch(function (error) {
+        console.error('Mpesa Payment Error:', error);
+      });
+
+    } else if (paymentMethod === 'stripe') {
+      fetch('/create-checkout-session', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ phone_number: phoneNumber }),
+      })
+      .then(function (response) {
+        return response.json();
+      })
+      .then(function (session) {
+        return stripe.redirectToCheckout({ sessionId: session.id });
+      })
+      .then(function (result) {
+        if (result.error) {
+          alert(result.error.message);
+        }
+      })
+      .catch(function (error) {
+        console.error('Stripe Payment Error:', error);
+      });
+    }
+  });
+</script>
+{% endblock %}

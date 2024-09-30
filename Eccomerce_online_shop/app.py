@@ -278,6 +278,21 @@ def create_app():
             # Handle any errors that occur
             return jsonify({'error': str(e)}), 500
 
+
+
+    # Dashboard route for admins
+    @app.route('/dashboard')
+    @login_required
+    @admin_required
+    def dashboard():
+        # Fetch data to display on the dashboard
+        products = Product.query.all()  # Fetch all products
+        users = User.query.all()  # Fetch all users
+        messages = ContactMessage.query.all()  # Fetch all contact form messages
+
+        # Render the dashboard template, passing the fetched data
+        return render_template('dashboard.html', products=products, users=users, messages=messages)
+
     @app.route('/success')
     def success():
         return render_template('success.html')
@@ -289,6 +304,36 @@ def create_app():
     @app.route("/about")
     def about():
         return render_template('about.html', title='About')
+
+    @app.route('/orders')
+    @login_required  # If the user must be logged in to view orders
+    def orders():
+        # Add logic for retrieving orders and rendering the orders page
+        return render_template('orders.html')
+
+    @app.route('/products')
+    @login_required
+    def products():
+        # Logic for displaying products
+        return render_template('products.html')
+
+    @app.route('/customers')
+    @login_required
+    def customers():
+        # Logic for displaying customers
+        return render_template('customers.html')
+
+    @app.route('/reports')
+    @login_required
+    def reports():
+        # Logic for displaying reports
+        return render_template('reports.html')
+
+    @app.route('/integrations')
+    @login_required
+    def integrations():
+        # Logic for displaying integrations
+        return render_template('integrations.html')
 
     from flask import render_template, request
     import bleach
