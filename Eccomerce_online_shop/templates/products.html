@@ -19,19 +19,21 @@
           </tr>
         </thead>
         <tbody>
-          <!-- Loop through products and display here -->
+          {% for product in products %}
           <tr>
-            <td>1</td>
-            <td>Product 1</td>
-            <td>$20</td>
-            <td>50</td>
-            <td>Electronics</td>
+            <td>{{ loop.index }}</td>
+            <td>{{ product.name }}</td>
+            <td>{{ product.price }}</td>
+            <td>{{ product.stock }}</td> <!-- Stock column -->
+            <td>{{ product.category }}</td> <!-- Category column -->
             <td>
-              <button class="btn btn-sm btn-primary">Edit</button>
-              <button class="btn btn-sm btn-danger">Delete</button>
+              <a href="{{ url_for('edit_product', product_id=product.id) }}" class="btn btn-sm btn-primary">Edit</a>
+              <form action="{{ url_for('delete_product', product_id=product.id) }}" method="POST" style="display:inline-block;">
+                <button class="btn btn-sm btn-danger" type="submit">Delete</button>
+              </form>
             </td>
           </tr>
-          <!-- More rows as needed -->
+          {% endfor %}
         </tbody>
       </table>
     </div>

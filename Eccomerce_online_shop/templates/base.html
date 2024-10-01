@@ -16,6 +16,8 @@
       integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH"
       crossorigin="anonymous"
     />
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-icons/1.5.0/font/bootstrap-icons.min.css" rel="stylesheet">
+
 
     {% block extra_css %}{% endblock %}
   </head>
@@ -146,6 +148,10 @@
                         <li class="nav-item">
                             <a href="{{ url_for('admin_dashboard') }}" class="btn btn-warning me-3">Admin Dashboard</a>
                         </li>
+                        <a class="nav-link d-flex align-items-center gap-2" href="{{ url_for('dashboard') }}">
+                        <svg class="bi" width="16" height="16" fill="currentColor">
+                          <use xlink:href="#house-fill"></use>
+                        </svg>
                     {% endif %}
                     {% if session.get('user') %}
                         <a href="/logout" class="btn btn-secondary ms-3">Log Out</a>

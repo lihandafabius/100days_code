@@ -5,11 +5,16 @@ from flask_sqlalchemy import SQLAlchemy
 from flask_bcrypt import Bcrypt
 from flask_login import LoginManager, login_user, current_user, logout_user, login_required, UserMixin
 from flask_migrate import Migrate
+from flask_wtf.file import FileAllowed
+from wtforms.fields.choices import SelectField
+
 from config import Config
 import stripe
 from datetime import datetime
 from werkzeug.utils import secure_filename
 from flask_ckeditor import CKEditor
+from wtforms import IntegerField
+
 import bleach
 
 # Initialize extensions
@@ -51,7 +56,7 @@ def create_app():
     @app.route("/")
     @app.route("/home")
     def home():
-        products = Product.query.all()  # Query the database for all products
+        products = Products.query.all()  # Query the database for all products
         return render_template('index.html', products=products)
 
     @app.route("/register", methods=['GET', 'POST'])
@@ -112,18 +117,21 @@ def create_app():
         if form.validate_on_submit():
             product_name = form.product_name.data
             product_price = form.product_price.data
+            product_category = form.product_category.data  # Add category
+            product_stock = form.product_stock.data  # Add stock
 
             # Strip HTML tags from the description to prevent storing HTML
             product_description = bleach.clean(form.product_description.data, tags=[], strip=True)
 
             # Save image
+            image_file = 'default.jpg'  # Default image
             if form.product_image.data:
                 image_file = secure_filename(form.product_image.data.filename)
                 form.product_image.data.save(os.path.join(app.root_path, 'static/images', image_file))
 
             # Add product to database
-            new_product = Product(name=product_name, price=product_price, description=product_description,
-                                  image=image_file)
+            new_product = Products(name=product_name, price=product_price, category=product_category,
+                                   stock=product_stock, description=product_description, image=image_file)
             db.session.add(new_product)
             db.session.commit()
 
@@ -136,13 +144,15 @@ def create_app():
     @login_required
     @admin_required
     def edit_product(product_id):
-        product = Product.query.get_or_404(product_id)
+        product = Products.query.get_or_404(product_id)
         form = ProductForm()
 
         if form.validate_on_submit():
             # Update product details
             product.name = form.product_name.data
             product.price = form.product_price.data
+            product.category = form.product_category.data  # Update category
+            product.stock = form.product_stock.data  # Update stock
 
             # Strip HTML tags from the description to prevent storing HTML
             product.description = bleach.clean(form.product_description.data, tags=[], strip=True)
@@ -151,7 +161,7 @@ def create_app():
             if form.product_image.data:
                 image_file = secure_filename(form.product_image.data.filename)
                 form.product_image.data.save(os.path.join(app.root_path, 'static/images', image_file))
-                product.image_file = image_file
+                product.image = image_file
 
             db.session.commit()
             flash(f'Product {product.name} updated successfully!', 'success')
@@ -161,6 +171,8 @@ def create_app():
         elif request.method == 'GET':
             form.product_name.data = product.name
             form.product_price.data = product.price
+            form.product_category.data = product.category  # Pre-fill category
+            form.product_stock.data = product.stock  # Pre-fill stock
             form.product_description.data = product.description
 
         return render_template('edit_product.html', form=form, product=product)
@@ -169,7 +181,7 @@ def create_app():
     @login_required
     @admin_required
     def delete_product(product_id):
-        product = Product.query.get_or_404(product_id)
+        product = Products.query.get_or_404(product_id)
         db.session.delete(product)
         db.session.commit()
         flash(f'Product {product.name} deleted successfully!', 'success')
@@ -194,15 +206,26 @@ def create_app():
     @app.route("/add_to_cart/<int:product_id>", methods=['POST'])
     @login_required
     def add_to_cart(product_id):
-        product = Product.query.get_or_404(product_id)
-        existing_item = CartItem.query.filter_by(user_id=current_user.id, product_id=product_id).first()
-        if existing_item:
-            existing_item.quantity += 1
+        product = Products.query.get_or_404(product_id)
+
+        # Check if stock is available
+        if product.stock > 0:
+            existing_item = CartItem.query.filter_by(user_id=current_user.id, product_id=product_id).first()
+
+            if existing_item:
+                existing_item.quantity += 1
+            else:
+                cart_item = CartItem(user_id=current_user.id, product_id=product_id, quantity=1)
+                db.session.add(cart_item)
+
+            # Decrease stock after item is added to the cart
+            product.stock -= 1
+
+            db.session.commit()
+            flash(f'{product.name} added to cart!', 'success')
         else:
-            cart_item = CartItem(user_id=current_user.id, product_id=product_id, quantity=1)
-            db.session.add(cart_item)
-        db.session.commit()
-        flash(f'{product.name} added to cart!', 'success')
+            flash(f'{product.name} is out of stock!', 'danger')
+
         return redirect(url_for('cart'))
 
     @app.route("/remove_from_cart/<int:cart_item_id>", methods=['POST'])
@@ -286,12 +309,13 @@ def create_app():
     @admin_required
     def dashboard():
         # Fetch data to display on the dashboard
-        products = Product.query.all()  # Fetch all products
+        products = Products.query.all()  # Fetch all products
         users = User.query.all()  # Fetch all users
         messages = ContactMessage.query.all()  # Fetch all contact form messages
 
         # Render the dashboard template, passing the fetched data
         return render_template('dashboard.html', products=products, users=users, messages=messages)
+
 
     @app.route('/success')
     def success():
@@ -315,7 +339,11 @@ def create_app():
     @login_required
     def products():
         # Logic for displaying products
-        return render_template('products.html')
+        # Query all products from the database
+        products = Products.query.all()
+
+        # Pass the products to the template
+        return render_template('products.html', products=products)
 
     @app.route('/customers')
     @login_required
@@ -397,12 +425,17 @@ class CommentForm(FlaskForm):
     submit = SubmitField("Submit")
 
 
+
+
 class ProductForm(FlaskForm):
     product_name = StringField('Product Name', validators=[DataRequired()])
-    product_price = DecimalField('Product Price', validators=[DataRequired()])
-    product_image = FileField('Product Image', validators=[DataRequired()])
-    product_description = CKEditorField('Product Description', validators=[DataRequired()])
-
+    product_price = DecimalField('Price', validators=[DataRequired()])
+    product_category = SelectField('Category', choices=[('men', 'Men'), ('women', 'Women'), ('kids', 'Kids'),
+                                                        ('others', 'Others')], validators=[DataRequired()])
+    product_stock = IntegerField('Stock', validators=[DataRequired()])
+    product_image = FileField('Product Image', validators=[FileAllowed(['jpg', 'png'])])
+    product_description = CKEditorField('Description', validators=[DataRequired()])
+    submit = SubmitField('Post Product')
 
 
 class ContactMessage(db.Model):
@@ -427,22 +460,27 @@ class User(db.Model, UserMixin):
     password = db.Column(db.String(60), nullable=False)
     is_admin = db.Column(db.Boolean, default=False)
 
-class Product(db.Model):
+class Products(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(100), nullable=False)
     price = db.Column(db.Float, nullable=False)
     description = db.Column(db.String(255), nullable=False)
     image = db.Column(db.String(100), nullable=False, default='default.jpg')
+    category = db.Column(db.String(20), nullable=False)
+    stock = db.Column(db.Integer, nullable=False)
 
-    cart_items = db.relationship('CartItem', backref='product', cascade='all, delete-orphan')
+    # Define the relationship to CartItem with a backref
+    cart_items = db.relationship('CartItem', backref='product', lazy=True)
+
 
 class CartItem(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
-    product_id = db.Column(db.Integer, db.ForeignKey('product.id'), nullable=False)
+    product_id = db.Column(db.Integer, db.ForeignKey('products.id'), nullable=False)  # Corrected here
     quantity = db.Column(db.Integer, nullable=False, default=1)
 
     user = db.relationship('User', backref='cart_items')
+
 
 
 if __name__ == '__main__':
