@@ -20,15 +20,16 @@
         </thead>
         <tbody>
           <!-- Loop through orders and display here -->
+          {% for order in orders %}
           <tr>
-            <td>1</td>
-            <td>ORD-1001</td>
-            <td>John Doe</td>
-            <td>Shipped</td>
-            <td>$150</td>
-            <td>2024-09-25</td>
+            <td>{{ loop.index }}</td>
+            <td>ORD-{{ order.id }}</td>
+            <td>{{ order.user.username }}</td> <!-- Assuming user has a 'username' attribute -->
+            <td>{{ order.status }}</td>
+            <td>${{ order.total_price }}</td>
+            <td>{{ order.date_ordered.strftime('%Y-%m-%d') }}</td>
           </tr>
-          <!-- More rows as needed -->
+          {% endfor %}
         </tbody>
       </table>
     </div>

@@ -1,5 +1,5 @@
 /* styles.css */
-.sign-in-page {
+.sign-in-page{
     height: 100vh;
     display: flex;
     align-items: center;
@@ -176,4 +176,7 @@ z-index: 1500;
 
 .bd-mode-toggle .dropdown-menu .active .bi {
 display: block !important;
+}
+.btn-danger {
+  margin-left: 15px; /* Adjust this as needed */
 }

@@ -78,7 +78,7 @@
                   <li><a class="dropdown-item" href="#">Kid's</a></li>
                   <li><hr class="dropdown-divider" /></li>
                   <li>
-                    <a class="dropdown-item" href="#">Something else here</a>
+                    <a class="dropdown-item" href="#">Something else</a>
                   </li>
                 </ul>
               </li>
@@ -95,24 +95,6 @@
               </button>
             </form>
             <form class="d-flex" role="search">
-              <div
-                class="d-flex flex-wrap align-items-center justify-content-center justify-content-lg-start"
-              >
-                <a
-                  href="/"
-                  class="d-flex align-items-center mb-2 mb-lg-0 link-body-emphasis text-decoration-none"
-                >
-                  <svg
-                    class="bi me-2"
-                    width="40"
-                    height="32"
-                    role="img"
-                    aria-label="Bootstrap"
-                  >
-                    <use xlink:href="#bootstrap"></use>
-                  </svg>
-                </a>
-
                 <ul
                   class="nav col-12 col-lg-auto me-lg-auto mb-2 justify-content-center mb-md-0"
                 >
@@ -143,15 +125,11 @@
                             Cart (<span>{{ cart_item_count }}</span>)
                         </button>
                     </a>
-                      <!-- Admin Dashboard Button  -->
-                    {% if session.get('is_admin') %}
-                        <li class="nav-item">
-                            <a href="{{ url_for('admin_dashboard') }}" class="btn btn-warning me-3">Admin Dashboard</a>
-                        </li>
-                        <a class="nav-link d-flex align-items-center gap-2" href="{{ url_for('dashboard') }}">
-                        <svg class="bi" width="16" height="16" fill="currentColor">
-                          <use xlink:href="#house-fill"></use>
-                        </svg>
+                              <!-- Admin Dashboard Button (Visible only if user is an admin) -->
+                    {% if current_user.is_admin %}
+                      <li class="nav-item">
+                        <a class="btn btn-danger" href="{{ url_for('dashboard') }}">Dashboard</a>
+                      </li>
                     {% endif %}
                     {% if session.get('user') %}
                         <a href="/logout" class="btn btn-secondary ms-3">Log Out</a>

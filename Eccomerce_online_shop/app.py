@@ -67,6 +67,7 @@ def create_app():
         if form.validate_on_submit():
             hashed_password = bcrypt.generate_password_hash(form.password.data).decode('utf-8')
             user = User(fullname=form.fullname.data, username=form.username.data, email=form.email.data,
+                        phone=form.phone.data,
                         password=hashed_password, is_admin=False)
             db.session.add(user)
             db.session.commit()
@@ -206,7 +207,7 @@ def create_app():
     @app.route("/add_to_cart/<int:product_id>", methods=['POST'])
     @login_required
     def add_to_cart(product_id):
-        product = Products.query.get_or_404(product_id)
+        product = Products.query.get_or_404(product_id)  # Ensure product exists
 
         # Check if stock is available
         if product.stock > 0:
@@ -263,14 +264,12 @@ def create_app():
     @login_required
     def create_checkout_session():
         try:
-            # Fetch the cart items for the current user
             cart_items = CartItem.query.filter_by(user_id=current_user.id).all()
 
-            # If no items in the cart, return an error
             if not cart_items:
                 return jsonify({'error': 'Your cart is empty.'}), 400
 
-            # Prepare line items for Stripe checkout session
+            # Prepare line items for Stripe
             line_items = [
                 {
                     'price_data': {
@@ -278,7 +277,7 @@ def create_app():
                         'product_data': {
                             'name': item.product.name,
                         },
-                        'unit_amount': int(item.product.price * 100),  # Stripe accepts amounts in cents
+                        'unit_amount': int(item.product.price * 100),
                     },
                     'quantity': item.quantity,
                 }
@@ -294,14 +293,29 @@ def create_app():
                 cancel_url=url_for('cancel', _external=True),
             )
 
-            # Return the session ID to the frontend
+            # After payment is successful, create the order
+            @app.route('/success')
+            def success():
+                order = Order(user_id=current_user.id,
+                              total_price=sum(item.product.price * item.quantity for item in cart_items))
+                db.session.add(order)
+                db.session.commit()
+
+                # Add each cart item as an OrderItem
+                for item in cart_items:
+                    order_item = OrderItem(order_id=order.id, product_id=item.product.id, quantity=item.quantity)
+                    db.session.add(order_item)
+
+                # Clear the cart after order creation
+                CartItem.query.filter_by(user_id=current_user.id).delete()
+                db.session.commit()
+
+                return render_template('success.html', order=order)
+
             return jsonify({'id': checkout_session.id})
 
         except Exception as e:
-            # Handle any errors that occur
             return jsonify({'error': str(e)}), 500
-
-
 
     # Dashboard route for admins
     @app.route('/dashboard')
@@ -330,13 +344,16 @@ def create_app():
         return render_template('about.html', title='About')
 
     @app.route('/orders')
-    @login_required  # If the user must be logged in to view orders
+    @login_required
+    @admin_required
     def orders():
-        # Add logic for retrieving orders and rendering the orders page
-        return render_template('orders.html')
+        orders = Order.query.all()
+        return render_template('orders.html', orders=orders)
+
 
     @app.route('/products')
     @login_required
+    @admin_required
     def products():
         # Logic for displaying products
         # Query all products from the database
@@ -347,18 +364,21 @@ def create_app():
 
     @app.route('/customers')
     @login_required
+    @admin_required
     def customers():
         # Logic for displaying customers
         return render_template('customers.html')
 
     @app.route('/reports')
     @login_required
+    @admin_required
     def reports():
         # Logic for displaying reports
         return render_template('reports.html')
 
     @app.route('/integrations')
     @login_required
+    @admin_required
     def integrations():
         # Logic for displaying integrations
         return render_template('integrations.html')
@@ -401,6 +421,7 @@ class RegistrationForm(FlaskForm):
     fullname = StringField('Full Name', validators=[DataRequired(), Length(min=2, max=100)])
     username = StringField('Username', validators=[DataRequired(), Length(min=2, max=20)])
     email = StringField('Email', validators=[DataRequired(), Email()])
+    phone = StringField('Phone', validators=[DataRequired(), Length(min=10, max=15)])
     password = PasswordField('Password', validators=[DataRequired()])
     confirm_password = PasswordField('Confirm Password', validators=[DataRequired(), EqualTo('password')])
     submit = SubmitField('Register')
@@ -457,8 +478,10 @@ class User(db.Model, UserMixin):
     fullname = db.Column(db.String(100), nullable=False)
     username = db.Column(db.String(20), unique=True, nullable=False)
     email = db.Column(db.String(120), unique=True, nullable=False)
+    phone = db.Column(db.String(20), nullable=False)
     password = db.Column(db.String(60), nullable=False)
     is_admin = db.Column(db.Boolean, default=False)
+
 
 class Products(db.Model):
     id = db.Column(db.Integer, primary_key=True)
@@ -480,6 +503,29 @@ class CartItem(db.Model):
     quantity = db.Column(db.Integer, nullable=False, default=1)
 
     user = db.relationship('User', backref='cart_items')
+
+
+class Order(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)  # Assuming you have a user table
+    date_ordered = db.Column(db.DateTime, default=datetime.utcnow)
+    total_price = db.Column(db.Float, nullable=False)
+    status = db.Column(db.String(20), nullable=False, default='Pending')
+    order_items = db.relationship('OrderItem', backref='order', lazy=True)
+
+    def __repr__(self):
+        return f"<Order {self.id}, User {self.user_id}>"
+
+
+class OrderItem(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    order_id = db.Column(db.Integer, db.ForeignKey('order.id'), nullable=False)
+    product_id = db.Column(db.Integer, db.ForeignKey('products.id'), nullable=False)
+    quantity = db.Column(db.Integer, nullable=False)
+    price = db.Column(db.Float, nullable=False)
+
+    def __repr__(self):
+        return f"<OrderItem {self.id}, Order {self.order_id}, Products {self.product_id}>"
 
 
 
