@@ -330,6 +330,46 @@ def create_app():
         # Render the dashboard template, passing the fetched data
         return render_template('dashboard.html', products=products, users=users, messages=messages)
 
+    @app.route('/settings', methods=['GET', 'POST'])
+    @login_required
+    @admin_required
+    def settings():
+        form = AdminForm()
+
+        # Handle the form submission to add an admin
+        if form.validate_on_submit():
+            email = form.email.data
+            user = User.query.filter_by(email=email).first()
+            if user:
+                if not user.is_admin:
+                    user.is_admin = True
+                    db.session.commit()
+                    flash(f'{user.email} is now an admin!', 'success')
+                else:
+                    flash(f'{user.email} is already an admin.', 'warning')
+            else:
+                flash('No user found with that email.', 'danger')
+
+        # Retrieve all admins from the database
+        admins = User.query.filter_by(is_admin=True).all()
+
+        return render_template('settings.html', form=form, admins=admins)
+
+    # Route to remove admin privileges
+    @app.route('/remove_admin/<int:admin_id>', methods=['POST'])
+    @login_required
+    @admin_required
+    def remove_admin(admin_id):
+        user = User.query.get_or_404(admin_id)
+
+        if user.is_admin:
+            user.is_admin = False
+            db.session.commit()
+            flash(f'{user.email} is no longer an admin.', 'success')
+        else:
+            flash(f'{user.email} is not an admin.', 'warning')
+
+        return redirect(url_for('settings'))
 
     @app.route('/success')
     def success():
@@ -445,6 +485,9 @@ class CommentForm(FlaskForm):
     comment_text = CKEditorField("Write your comment", validators=[DataRequired()])
     submit = SubmitField("Submit")
 
+class AdminForm(FlaskForm):
+    email = StringField('Email', validators=[DataRequired(), Email()])
+    submit = SubmitField('Add Admin')
 
 
 
@@ -466,6 +509,29 @@ class ContactMessage(db.Model):
     phone = db.Column(db.String(20), nullable=False)
     message = db.Column(db.Text, nullable=False)
     date_sent = db.Column(db.DateTime, nullable=False, default=datetime.utcnow)
+
+
+class Settings(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    site_title = db.Column(db.String(100), nullable=False, default="My eCommerce Site")
+    site_logo = db.Column(db.String(100), nullable=True)  # Store logo file path
+    contact_email = db.Column(db.String(100), nullable=False)
+    contact_phone = db.Column(db.String(20), nullable=False)
+    address = db.Column(db.Text, nullable=True)
+    maintenance_mode = db.Column(db.Boolean, default=False)
+    notifications_new_orders = db.Column(db.Boolean, default=True)
+    notifications_customer_inquiries = db.Column(db.Boolean, default=True)
+    notifications_low_stock = db.Column(db.Boolean, default=True)
+
+    @staticmethod
+    def get_settings():
+        # Singleton pattern to ensure one row for settings
+        settings = Settings.query.first()
+        if not settings:
+            settings = Settings()
+            db.session.add(settings)
+            db.session.commit()
+        return settings
 
 
 # Models (User, Product, CartItem)
