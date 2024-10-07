@@ -14,6 +14,8 @@ from datetime import datetime
 from werkzeug.utils import secure_filename
 from flask_ckeditor import CKEditor
 from wtforms import IntegerField
+from flask import g
+
 
 import bleach
 
@@ -52,12 +54,28 @@ def create_app():
             cart_item_count = 0
         return dict(cart_item_count=cart_item_count)
 
+    @app.before_request
+    def check_maintenance_mode():
+        # Get current settings from the database
+        settings = Settings.get_settings()
+
+        # Store settings globally for access in templates
+        g.settings = settings
+
+        # If maintenance mode is enabled and the user is not an admin, show the maintenance page
+        if settings.maintenance_mode and (not current_user.is_authenticated or not current_user.is_admin):
+            return render_template('maintenance.html'), 503  # 503 Service Unavailable
+
     # Routes
     @app.route("/")
     @app.route("/home")
     def home():
         products = Products.query.all()  # Query the database for all products
-        return render_template('index.html', products=products)
+        return render_template('index.html', products=products, settings=settings)
+    @app.before_request
+    def load_settings():
+        settings = Settings.get_settings()
+        g.settings = settings  # Use Flask's global object `g` to pass settings
 
     @app.route("/register", methods=['GET', 'POST'])
     def register():
@@ -449,6 +467,92 @@ def create_app():
 
         return render_template('contact.html', msg_sent=msg_sent)
 
+    @app.route('/update_contact_info', methods=['POST'])
+    @login_required
+    @admin_required
+    def update_contact_info():
+        contact_email = request.form.get('contact_email')
+        contact_phone = request.form.get('contact_phone')
+        address = request.form.get('address')
+
+        # Get the current settings (singleton pattern)
+        settings = Settings.get_settings()
+
+        # Update the contact information if provided
+        if contact_email:
+            settings.contact_email = contact_email
+        if contact_phone:
+            settings.contact_phone = contact_phone
+        if address:
+            settings.address = address
+
+        # Commit changes to the database
+        try:
+            db.session.commit()
+            flash('Contact information updated successfully', 'success')
+        except Exception as e:
+            db.session.rollback()
+            flash(f'Error updating contact information: {str(e)}', 'danger')
+
+        return redirect(url_for('settings'))
+
+    @app.route('/update_branding', methods=['POST'])
+    @login_required
+    @admin_required
+    def update_branding():
+        site_title = request.form.get('site_title')
+        logo = request.files['site_logo']
+
+        # Get the current settings (singleton pattern)
+        settings = Settings.get_settings()
+
+        # Update the site title if provided
+        if site_title:
+            settings.site_title = site_title
+
+        # Handle file upload and save logic for the logo
+        if logo:
+            # Generate a secure filename
+            filename = secure_filename(logo.filename)
+            logo_path = os.path.join(app.config['UPLOAD_FOLDER'], filename)
+
+            # Save the file in the defined upload folder
+            logo.save(logo_path)
+
+            # Save the filename in the database (you may store just the file name or relative path)
+            settings.site_logo = filename
+
+        # Commit changes to the database
+        try:
+            db.session.commit()
+            flash('Branding updated successfully', 'success')
+        except Exception as e:
+            db.session.rollback()
+            flash(f'Error updating branding: {str(e)}', 'danger')
+
+        return redirect(url_for('settings'))
+
+    @app.route('/toggle_maintenance', methods=['POST'])
+    @login_required
+    @admin_required
+    def toggle_maintenance():
+        maintenance_mode = 'maintenance_mode' in request.form
+
+        # Get the current settings
+        settings = Settings.get_settings()
+
+        # Update the maintenance mode in the database
+        settings.maintenance_mode = maintenance_mode
+
+        try:
+            db.session.commit()
+            flash('Maintenance mode updated successfully', 'success')
+        except Exception as e:
+            db.session.rollback()
+            flash(f'Error updating maintenance mode: {str(e)}', 'danger')
+
+        return redirect(url_for('settings'))
+
     return app
 
 # Forms (RegistrationForm, LoginForm, CommentForm)
@@ -513,11 +617,11 @@ class ContactMessage(db.Model):
 
 class Settings(db.Model):
     id = db.Column(db.Integer, primary_key=True)
-    site_title = db.Column(db.String(100), nullable=False, default="My eCommerce Site")
+    site_title = db.Column(db.String(100), nullable=False, default="Bitbanta store")
     site_logo = db.Column(db.String(100), nullable=True)  # Store logo file path
-    contact_email = db.Column(db.String(100), nullable=False)
-    contact_phone = db.Column(db.String(20), nullable=False)
-    address = db.Column(db.Text, nullable=True)
+    contact_email = db.Column(db.String(100), nullable=False, default="info@bitbanta.com")
+    contact_phone = db.Column(db.String(20), nullable=False, default="123-456-7890")
+    address = db.Column(db.Text, nullable=True, default="123 Main St, City, Country")
     maintenance_mode = db.Column(db.Boolean, default=False)
     notifications_new_orders = db.Column(db.Boolean, default=True)
     notifications_customer_inquiries = db.Column(db.Boolean, default=True)
@@ -525,13 +629,14 @@ class Settings(db.Model):
 
     @staticmethod
     def get_settings():
-        # Singleton pattern to ensure one row for settings
+        # Singleton pattern to ensure only one settings record
         settings = Settings.query.first()
         if not settings:
             settings = Settings()
             db.session.add(settings)
             db.session.commit()
         return settings
+
 
 
 # Models (User, Product, CartItem)

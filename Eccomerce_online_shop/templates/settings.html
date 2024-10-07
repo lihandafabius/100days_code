@@ -56,6 +56,69 @@
     </div>
 
     <!-- Additional Settings --><!-- Change Contact Information Section -->
+    <!-- Change Site Title and Branding Section -->
+    <div class="card mt-4">
+        <div class="card-body">
+            <h4>Site Title & Branding</h4>
+            <form method="POST" action="{{ url_for('update_branding') }}" enctype="multipart/form-data">
+                <div class="form-group">
+                    <label for="site_title">Site Title</label>
+                    <input type="text" class="form-control" id="site_title" name="site_title" value="{{ site_title }}">
+                </div>
+
+                <div class="form-group">
+                    <label for="site_logo">Upload Site Logo</label>
+                    <input type="file" class="form-control-file" id="site_logo" name="site_logo">
+                </div>
+
+                <button type="submit" class="btn btn-primary mt-2">Update Branding</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Change Contact Information Section -->
+    <div class="card mt-4">
+        <div class="card-body">
+            <h4>Contact Information</h4>
+            <form method="POST" action="{{ url_for('update_contact_info') }}">
+                <div class="form-group">
+                    <label for="contact_email">Contact Email</label>
+                    <input type="email" class="form-control" id="contact_email" name="contact_email" value="{{ g.settings.contact_email }}">
+                </div>
+
+                <div class="form-group">
+                    <label for="contact_phone">Phone Number</label>
+                    <input type="text" class="form-control" id="contact_phone" name="contact_phone" value="{{ g.settings.contact_phone }}">
+                </div>
+
+                <div class="form-group">
+                    <label for="address">Physical Address</label>
+                    <textarea class="form-control" id="address" name="address">{{ g.settings.address }}</textarea>
+                </div>
+
+                <button type="submit" class="btn btn-primary mt-2">Update Contact Info</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Maintenance Mode Section -->
+    <div class="card mt-4">
+        <div class="card-body">
+            <h4>Maintenance Mode</h4>
+            <form method="POST" action="{{ url_for('toggle_maintenance') }}">
+                <div class="form-switch">
+                    <input class="form-check-input" type="checkbox" role="switch" id="maintenance_mode" name="maintenance_mode" {% if g.settings.maintenance_mode %}checked{% endif %}>
+                    <label class="form-check-label" for="maintenance_mode">
+                        Enable Maintenance Mode
+                    </label>
+                </div>
+                <button type="submit" class="btn btn-warning mt-2">Update Maintenance Mode</button>
+            </form>
+        </div>
+    </div>
+
+
+
 
 </div>
 {% endblock %}

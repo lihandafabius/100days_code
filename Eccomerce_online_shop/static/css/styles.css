@@ -180,3 +180,31 @@ display: block !important;
 .btn-danger {
   margin-left: 15px; /* Adjust this as needed */
 }
+
+.branding {
+    display: flex; /* Ensures elements inside are in a row */
+    align-items: center; /* Vertically center the title and logo */
+}
+
+.site-logo {
+    width: 50px; /* Adjust the width of the logo as needed */
+    height: auto;
+    margin-right: 5px; /* Add some space between the logo and the title */
+    object-fit: contain; /* Ensures the image fits inside the bounds */
+    max-height: 50px; /* Ensure it doesn't stretch too tall */
+}
+
+.site-title {
+    font-size: 24px; /* Adjust the font size of the title */
+    font-weight: bold;
+}
+/* Custom styling for the toggle switch */
+.form-switch .form-check-input:checked {
+    background-color: #28a745; /* green for 'on' */
+    border-color: #28a745;
+}
+
+.form-switch .form-check-input:not(:checked) {
+    background-color: #dc3545; /* red for 'off' */
+    border-color: #dc3545;
+}

@@ -3,7 +3,7 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>{% block title %}My Website{% endblock %}</title>
+    <title>{% block title %}{{ site_title | default('My Website') }}{% endblock %}</title>
     {{ ckeditor.load() }}  <!-- This loads the CKEditor script -->
     {{ ckeditor.config(name='form.product_description') }}
     <link
@@ -36,13 +36,12 @@
     <div class="container">
       <nav class="navbar navbar-expand-lg bg-body-tertiary">
         <div class="container-fluid">
-          <a class="navbar-brand" href="#">
-            <img
-              src="{{ url_for('static', filename='images/design.jpg') }}"
-              height="40"
-              alt="Company Logo"
-            />Bitbanta
-          </a>
+            <a class="navbar-brand" href="#">
+              <div class="branding">
+                  <img src="{{ url_for('static', filename='images/uploads/' + g.settings.site_logo) }}" alt="Site Logo" class="site-logo">
+                  <span class="site-title">{{ g.settings.site_title | default('Bitbanta') }}</span>
+              </div>
+            </a>
           <button
             class="navbar-toggler"
             type="button"
@@ -249,27 +248,33 @@
                 </li>
                 <li class="nav-item mb-2">
                   <a href="#" class="nav-link p-0 text-body-secondary"
-                    >Support Us</a
+                    >Shipping</a
                   >
                 </li>
               </ul>
             </div>
 
             <div class="col-6 col-md-2 mb-3">
-              <h5>Contact Us</h5>
-              <ul class="nav flex-column">
-                <li class="nav-item mb-2">
-                  <a href="#" class="nav-link p-0 text-body-secondary"
-                    >Help Center</a
-                  >
-                </li>
-                <li class="nav-item mb-2">
-                  <a href="#" class="nav-link p-0 text-body-secondary"
-                    >Shipping</a
-                  >
-                </li>
-              </ul>
+                <h5>Contact Us</h5>
+                <ul class="nav flex-column">
+                    <li class="nav-item mb-2">
+                        <a href="mailto:{{ g.settings.contact_email }}" class="nav-link p-0 text-body-secondary">
+                            Email: {{ g.settings.contact_email }}
+                        </a>
+                    </li>
+                    <li class="nav-item mb-2">
+                        <a href="tel:{{ g.settings.contact_phone }}" class="nav-link p-0 text-body-secondary">
+                            Phone: {{ g.settings.contact_phone }}
+                        </a>
+                    </li>
+                    <li class="nav-item mb-2">
+                        <span class="nav-link p-0 text-body-secondary">
+                            Address: {{ g.settings.address }}
+                        </span>
+                    </li>
+                </ul>
             </div>
+
 
             <div class="col-md-5 offset-md-1 mb-3">
               <form>
