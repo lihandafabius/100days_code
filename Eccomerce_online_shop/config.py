@@ -14,3 +14,11 @@ class Config:
     # Ensure the folder exists (create if it doesn't)
     if not os.path.exists(UPLOAD_FOLDER):
         os.makedirs(UPLOAD_FOLDER)
+
+    # Flask-Mail Configuration
+    MAIL_SERVER = 'smtp.gmail.com'  # Example: for Gmail
+    MAIL_PORT = 587
+    MAIL_USE_TLS = True
+    MAIL_USERNAME = os.environ.get('MAIL_USERNAME')  # Add your email
+    MAIL_PASSWORD = os.environ.get('MAIL_PASSWORD')  # Add your email password
+    MAIL_DEFAULT_SENDER = os.environ.get('MAIL_DEFAULT_SENDER')  # Default email sender

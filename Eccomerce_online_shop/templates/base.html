@@ -277,22 +277,13 @@
 
 
             <div class="col-md-5 offset-md-1 mb-3">
-              <form>
+              <form method="POST" action="{{ url_for('subscribe') }}">
                 <h5>Subscribe to Our Newsletter</h5>
                 <p>Be the first to know Newest Arrivals.</p>
                 <div class="d-flex flex-column flex-sm-row w-100 gap-2">
-                  <label for="newsletter1" class="visually-hidden"
-                    >Email address</label
-                  >
-                  <input
-                    id="newsletter1"
-                    type="text"
-                    class="form-control"
-                    placeholder="Email address"
-                  />
-                  <button class="btn btn-primary" type="button">
-                    Subscribe
-                  </button>
+                  <label for="newsletter1" class="visually-hidden">Email address</label>
+                  <input id="newsletter1" name="email" type="text" class="form-control" placeholder="Email address" />
+                  <button class="btn btn-primary" type="submit">Subscribe</button>
                 </div>
               </form>
             </div>
@@ -335,6 +326,11 @@
       <script src="{{ url_for('static', filename='js/rate.js') }}"></script>
       <script src="{{ url_for('static', filename='js/theme_toggle.js') }}"></script>
       <script src="{{ url_for('static', filename='js/custom.js') }}"></script>
+      <script src="//cdn.ckeditor.com/4.16.2/standard/ckeditor.js"></script>
+      <script>
+          CKEDITOR.replace('newsletter_content');
+      </script>
+
       <!-- Icons for dark/light theme -->
       <svg xmlns="http://www.w3.org/2000/svg" class="d-none">
         <symbol id="sun-fill" viewBox="0 0 16 16">

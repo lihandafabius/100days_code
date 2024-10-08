@@ -41,5 +41,21 @@
       </table>
     </div>
   </div>
+
+  <!-- Subscriber Notification Section -->
+  <div class="row mt-5">
+    <div class="col">
+      <h3>Notify Subscribers About New Stock</h3>
+      <p>Use this form to send an update to your subscribers whenever new stock or products are added.</p>
+      <form method="POST" action="{{ url_for('send_newsletter') }}">
+        <div class="form-group">
+          <label for="newsletter_content">Message to Subscribers</label>
+          <textarea class="form-control ckeditor" id="newsletter_content" name="content" rows="5"></textarea>
+        </div>
+        <button type="submit" class="btn btn-primary mt-2">Send Notification</button>
+      </form>
+    </div>
+  </div>
 </div>
+
 {% endblock %}

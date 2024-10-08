@@ -1,5 +1,7 @@
 from functools import wraps
 import os
+
+from django.core import mail
 from flask import Flask, render_template, url_for, flash, redirect, session, request, jsonify
 from flask_sqlalchemy import SQLAlchemy
 from flask_bcrypt import Bcrypt
@@ -15,7 +17,7 @@ from werkzeug.utils import secure_filename
 from flask_ckeditor import CKEditor
 from wtforms import IntegerField
 from flask import g
-
+from flask_mail import Mail, Message
 
 import bleach
 
@@ -553,6 +555,37 @@ def create_app():
 
         return redirect(url_for('settings'))
 
+    @app.route('/subscribe', methods=['POST'])
+    def subscribe():
+        email = request.form.get('email')
+        if email:
+            # Check if already subscribed
+            if Subscriber.query.filter_by(email=email).first():
+                flash('You are already subscribed.', 'info')
+            else:
+                subscriber = Subscriber(email=email)
+                db.session.add(subscriber)
+                db.session.commit()
+                flash('You have successfully subscribed!', 'success')
+        else:
+            flash('Please provide a valid email.', 'danger')
+        return redirect(url_for('home'))
+
+    @app.route('/send_newsletter', methods=['POST'])
+    @login_required
+    @admin_required
+    def send_newsletter():
+        content = request.form.get('content')
+        subscribers = Subscriber.query.all()
+
+        for subscriber in subscribers:
+            msg = Message('New Stock Available!', recipients=[subscriber.email])
+            msg.body = content
+            mail.send(msg)
+
+        flash('Notification sent to subscribers successfully!', 'success')
+        return redirect(url_for('products'))
+
     return app
 
 # Forms (RegistrationForm, LoginForm, CommentForm)
@@ -697,6 +730,15 @@ class OrderItem(db.Model):
 
     def __repr__(self):
         return f"<OrderItem {self.id}, Order {self.order_id}, Products {self.product_id}>"
+
+
+class Subscriber(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    email = db.Column(db.String(120), nullable=False, unique=True)
+
+    def __repr__(self):
+        return f'<Subscriber {self.email}>'
+
 
 
 
