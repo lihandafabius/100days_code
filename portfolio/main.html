@@ -64,20 +64,32 @@
     </div>
   </div>
 </nav>
+<!-- About Me Section -->
 <div class="bg-dark text-secondary px-4 py-5 text-center">
     <div class="py-5">
-      <h1 class="display-5 fw-bold text-white">About Me</h1>
-      <div class="col-lg-6 mx-auto">
-        <p class="fs-5 mb-4" style="color: #f0f0f0;">
-          Hello! My name is Fabius Lihanda. I am a dedicated and proficient web developer specializing in backend engineering, with a passion for cybersecurity and data analysis. As a Kenyan citizen born in the vibrant capital Nairobi, I have been immersed in the dynamic world of technology and innovation. Aspiring to become a Pentester and DevSecOps professional, I also plan to establish my own tech consulting firm, Bitbanta. Through Bitbanta, I aim to provide innovative and tailored tech solutions to businesses, helping them navigate the complexities of the digital world
-        </p>
-        <div class="d-grid gap-2 d-sm-flex justify-content-sm-center">
-          <button type="button" class="btn btn-outline-info btn-lg px-4 me-sm-3 fw-bold">Need to Consult</button>
-          <button type="button" class="btn btn-outline-light btn-lg px-4">Looking to Hire</button>
+        <h1 class="display-5 fw-bold text-white">About Me</h1>
+        <div class="col-lg-8 mx-auto">
+            <div class="d-flex flex-column flex-md-row align-items-center text-md-start text-center">
+                <!-- Profile Picture -->
+                <div class="mb-4 mb-md-0 me-md-4">
+                    <img src="fab.jfif" alt="Profile Picture" class="profile-img">
+                </div>
+                <!-- About Me Text -->
+                <div>
+                    <p class="fs-5 mb-4 about-text">
+                        Hello! My name is <strong>[Your Name]</strong>. I am a dedicated and proficient web developer specializing in backend engineering, with a passion for cybersecurity and data analysis. Based in the vibrant capital, I have been immersed in the dynamic world of technology and innovation. Aspiring to become a Pentester and DevSecOps professional, I also plan to establish my own tech consulting firm, <strong>Bitbanta</strong>. Through Bitbanta, I aim to provide innovative and tailored tech solutions to businesses, helping them navigate the complexities of the digital world.
+                    </p>
+                    <div class="d-grid gap-2 d-sm-flex justify-content-sm-start">
+                        <button type="button" class="btn btn-outline-info btn-lg px-4 me-sm-3 fw-bold btn-hover">Need to Consult</button>
+                        <button type="button" class="btn btn-outline-light btn-lg px-4 btn-hover">Looking to Hire</button>
+                    </div>
+                </div>
+            </div>
         </div>
-      </div>
     </div>
-  </div>
+</div>
+
+
  <div class="container px-4 py-5" id="featured-3">
     <h2 class="pb-2 border-bottom">Why Choose Me?</h2>
     <div class="row g-4 py-5 row-cols-1 row-cols-lg-3">
@@ -210,4 +222,39 @@
 </div>
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
 </body>
+<!-- Custom Styles -->
+<style>
+    /* Profile Image Styling */
+    .profile-img {
+        width: 180px;
+        height: 180px;
+        object-fit: cover;
+        border: 4px solid #17a2b8; /* Bootstrap Info color */
+        border-radius: 50%;
+        transition: transform 0.3s ease-in-out, box-shadow 0.3s ease-in-out;
+        box-shadow: 0 4px 10px rgba(23, 162, 184, 0.5);
+    }
+
+    .profile-img:hover {
+        transform: scale(1.05);
+        box-shadow: 0 6px 15px rgba(23, 162, 184, 0.7);
+    }
+
+    /* About Me Text Styling */
+    .about-text {
+        color: #f0f0f0;
+        line-height: 1.6;
+        font-weight: 400;
+    }
+
+    /* Button Hover Effects */
+    .btn-hover {
+        transition: all 0.3s ease-in-out;
+    }
+
+    .btn-hover:hover {
+        transform: scale(1.05);
+        box-shadow: 0 4px 10px rgba(255, 255, 255, 0.2);
+    }
+</style>
 </html>

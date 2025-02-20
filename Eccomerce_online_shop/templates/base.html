@@ -17,6 +17,10 @@
       crossorigin="anonymous"
     />
     <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-icons/1.5.0/font/bootstrap-icons.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://unpkg.com/flickity@2/dist/flickity.min.css">
+
+
+
 
 
     {% block extra_css %}{% endblock %}
@@ -59,7 +63,7 @@
                 <a class="nav-link active" aria-current="page" href="{{ url_for('home') }}">Home</a>
               </li>
               <li class="nav-item">
-                <a class="nav-link" href="#">Blog</a>
+                <a class="nav-link" href="#">Team</a>
               </li>
               <li class="nav-item dropdown">
                 <a
@@ -69,7 +73,7 @@
                   data-bs-toggle="dropdown"
                   aria-expanded="false"
                 >
-                  Store
+                  More
                 </a>
                 <ul class="dropdown-menu">
                   <li><a class="dropdown-item" href="#">Men's</a></li>
@@ -82,17 +86,27 @@
                 </ul>
               </li>
             </ul>
-            <form class="d-flex" role="search">
-              <input
-                class="form-control me-2"
-                type="search"
-                placeholder="Search"
-                aria-label="Search"
-              />
-              <button class="btn btn-outline-success" type="submit">
-                Search
-              </button>
-            </form>
+   <!-- Centered search form -->
+            <div class="mx-auto">
+              <form action="/search" class="search_form d-flex justify-content-center" role="search">
+                <input type="hidden" name="type" value="product">
+                <div class="input-group">
+                  <input
+                    type="text"
+                    name="q"
+                    class="form-control"
+                    placeholder="Search"
+                    aria-label="Search"
+                    autocapitalize="off"
+                    autocomplete="off"
+                    autocorrect="off"
+                  />
+                  <button class="btn btn-outline-secondary" type="submit">
+                    <i class="bi bi-search"></i>
+                  </button>
+                </div>
+              </form>
+            </div>
             <form class="d-flex" role="search">
                 <ul
                   class="nav col-12 col-lg-auto me-lg-auto mb-2 justify-content-center mb-md-0"
@@ -330,6 +344,7 @@
       <script>
           CKEDITOR.replace('newsletter_content');
       </script>
+      <script src="https://unpkg.com/flickity@2/dist/flickity.pkgd.min.js"></script>
 
       <!-- Icons for dark/light theme -->
       <svg xmlns="http://www.w3.org/2000/svg" class="d-none">
