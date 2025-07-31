@@ -1,5 +1,5 @@
 from flask import Flask, render_template, redirect, url_for, request, jsonify
-from flask_bootstrap import Bootstrap5
+from flask_bootstrap import Bootstrap
 from flask_sqlalchemy import SQLAlchemy
 from flask_wtf import FlaskForm
 from wtforms import StringField, SubmitField
@@ -13,7 +13,7 @@ MOVIE_DB_IMAGE_URL = "https://image.tmdb.org/t/p/w500"
 
 app = Flask(__name__)
 app.config['SECRET_KEY'] = '8BYkEfBA6O6donzWlSihBXox7C0sKR6b'
-Bootstrap5(app)
+Bootstrap(app)
 
 ##CREATE DB
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///movies.db'
