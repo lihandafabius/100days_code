@@ -3,19 +3,58 @@
 {% block title %}Login{% endblock %}
 
 {% block content %}
-<h2>Login</h2>
-<form method="POST" action="{{ url_for('main.login') }}">
-    {{ form.hidden_tag() }}
-    <div class="form-group">
-        {{ form.email.label(class="form-label") }}
-        {{ form.email(class="form-control") }}
+<div class="row justify-content-center animate-fade">
+    <div class="col-md-8 col-lg-6">
+        <div class="card shadow-sm">
+            <div class="card-body p-5">
+                <div class="text-center mb-4">
+                    <h2 class="fw-bold text-primary">
+                        <i class="fas fa-sign-in-alt me-2"></i>Welcome Back
+                    </h2>
+                    <p class="text-muted">Please sign in to access your tasks</p>
+                </div>
+
+                <form method="POST" action="{{ url_for('main.login') }}">
+                    {{ form.hidden_tag() }}
+
+                    <div class="mb-4">
+                        {{ form.email.label(class="form-label fw-bold") }}
+                        <div class="input-group">
+                            <span class="input-group-text"><i class="fas fa-envelope"></i></span>
+                            {{ form.email(class="form-control form-control-lg", placeholder="your@email.com") }}
+                        </div>
+                    </div>
+
+                    <div class="mb-4">
+                        {{ form.password.label(class="form-label fw-bold") }}
+                        <div class="input-group">
+                            <span class="input-group-text"><i class="fas fa-lock"></i></span>
+                            {{ form.password(class="form-control form-control-lg", placeholder="••••••••") }}
+                        </div>
+                    </div>
+
+                    <div class="mb-4 d-flex justify-content-between align-items-center">
+                        <div class="form-check">
+                            {{ form.remember(class="form-check-input") }}
+                            {{ form.remember.label(class="form-check-label") }}
+                        </div>
+                        <a href="#" class="text-decoration-none">Forgot password?</a>
+                    </div>
+
+                    <div class="d-grid mb-4">
+                        <button type="submit" class="btn btn-primary btn-lg">
+                            <i class="fas fa-sign-in-alt me-2"></i>Sign In
+                        </button>
+                    </div>
+
+                    <div class="text-center">
+                        <p class="text-muted">Don't have an account?
+                            <a href="{{ url_for('main.register') }}" class="text-primary fw-bold">Register here</a>
+                        </p>
+                    </div>
+                </form>
+            </div>
+        </div>
     </div>
-    <div class="form-group">
-        {{ form.password.label(class="form-label") }}
-        {{ form.password(class="form-control") }}
-    </div>
-    <div class="form-group">
-        {{ form.submit(class="btn btn-primary") }}
-    </div>
-</form>
+</div>
 {% endblock %}

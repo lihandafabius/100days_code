@@ -1,23 +1,54 @@
 {% extends 'base.html' %}
 
-{% block title %}Add New Task{% endblock %}
+{% block title %}{% if task %}Edit{% else %}Add{% endif %} Task{% endblock %}
 
 {% block content %}
-<div class="container">
-    <h2>Add New Task</h2>
-    <form method="POST" action="{{ url_for('main.add_task') }}">
-        {{ form.hidden_tag() }}
-        <div class="form-group">
-            {{ form.task.label(class="form-label") }}
-            {{ form.task(class="form-control") }}
+<div class="row justify-content-center animate-fade">
+    <div class="col-lg-8">
+        <div class="card shadow-sm">
+            <div class="card-header bg-primary text-white">
+                <h4 class="mb-0">
+                    <i class="fas fa-{{ 'edit' if task else 'plus' }} me-2"></i>
+                    {% if task %}Edit Task{% else %}Add New Task{% endif %}
+                </h4>
+            </div>
+            <div class="card-body">
+                <form method="POST" action="{% if task %}{{ url_for('main.update_task', task_id=task.id) }}{% else %}{{ url_for('main.add_task') }}{% endif %}">
+                    {{ form.hidden_tag() }}
+
+                    <div class="mb-4">
+                        {{ form.title.label(class="form-label fw-bold") }}
+                        {{ form.title(class="form-control form-control-lg") }}
+                        {% if form.title.errors %}
+                            <div class="invalid-feedback d-block">
+                                {{ form.title.errors[0] }}
+                            </div>
+                        {% endif %}
+                        <div class="form-text">Enter a clear and descriptive task name</div>
+                    </div>
+
+                    <div class="mb-4">
+                        {{ form.due_date.label(class="form-label fw-bold") }}
+                        {{ form.due_date(class="form-control form-control-lg") }}
+                        {% if form.due_date.errors %}
+                            <div class="invalid-feedback d-block">
+                                {{ form.due_date.errors[0] }}
+                            </div>
+                        {% endif %}
+                        <div class="form-text">Set a realistic deadline for this task</div>
+                    </div>
+
+                    <div class="d-grid gap-2 d-md-flex justify-content-md-end">
+                        <a href="{{ url_for('main.dashboard') }}" class="btn btn-outline-secondary me-md-2">
+                            <i class="fas fa-times me-2"></i>Cancel
+                        </a>
+                        <button type="submit" class="btn btn-primary">
+                            <i class="fas fa-save me-2"></i>{% if task %}Update{% else %}Create{% endif %} Task
+                        </button>
+                    </div>
+                </form>
+            </div>
         </div>
-        <div class="form-group">
-            {{ form.due_date.label(class="form-label") }}
-            {{ form.due_date(class="form-control", type="date") }}
-        </div>
-        <div class="form-group">
-            {{ form.submit(class="btn btn-success") }}
-        </div>
-    </form>
+    </div>
 </div>
 {% endblock %}
