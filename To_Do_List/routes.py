@@ -18,18 +18,14 @@ scheduler = BackgroundScheduler()
 scheduler.start()
 atexit.register(lambda: scheduler.shutdown())
 
-
 @login_manager.user_loader
 def load_user(user_id):
     """Load user for Flask-Login"""
     return User.query.get(int(user_id))
 
-
 # --------------------- Auth Routes ---------------------
-
 @main.route('/register', methods=['GET', 'POST'])
 def register():
-    """Handle user registration"""
     if current_user.is_authenticated:
         return redirect(url_for('main.dashboard'))
 
@@ -49,76 +45,55 @@ def register():
         except Exception as e:
             db.session.rollback()
             flash('Registration failed. Please try again.', 'danger')
-
     return render_template('register.html', form=form)
-
 
 @main.route('/login', methods=['GET', 'POST'])
 def login():
-    """Handle user login"""
     if current_user.is_authenticated:
         return redirect(url_for('main.dashboard'))
 
     form = LoginForm()
     if form.validate_on_submit():
         user = User.query.filter_by(email=form.email.data).first()
-
         if user and check_password_hash(user.password, form.password.data):
             login_user(user, remember=form.remember.data)
             next_page = request.args.get('next')
             return redirect(next_page) if next_page else redirect(url_for('main.dashboard'))
-
         flash('Invalid email or password', 'danger')
-
     return render_template('login.html', form=form)
-
 
 @main.route('/logout')
 @login_required
 def logout():
-    """Handle user logout"""
     logout_user()
     flash('You have been logged out.', 'info')
     return redirect(url_for('main.login'))
 
-
 # --------------------- Task Dashboard ---------------------
-
 @main.route('/')
 @login_required
 def index():
-    """Redirect to dashboard"""
     return redirect(url_for('main.dashboard'))
-
 
 @main.route('/dashboard')
 @login_required
 def dashboard():
-    """Display user dashboard"""
-    today = datetime.now().strftime('%Y-%m-%d')
+    today = datetime.now().date()
     tasks = Task.query.filter_by(user_id=current_user.id).order_by(
         Task.starred.desc(),
         Task.due_date.asc()
     ).all()
-
-    return render_template('dashboard.html',
-                           tasks=tasks,
-                           today=today,
-                           user=current_user)
-
+    return render_template('dashboard.html', tasks=tasks, today=today, user=current_user)
 
 # --------------------- Task Management ---------------------
-
 @main.route('/task/add', methods=['GET', 'POST'])
 @login_required
 def add_task():
-    """Add a new task"""
     form = TaskForm()
-
     if form.validate_on_submit():
         try:
             task = Task(
-                task=form.task.data,
+                title=form.title.data,
                 due_date=form.due_date.data,
                 user_id=current_user.id
             )
@@ -129,41 +104,33 @@ def add_task():
         except Exception as e:
             db.session.rollback()
             flash('Failed to add task. Please try again.', 'danger')
-
     return render_template('add_task.html', form=form)
-
 
 @main.route('/task/<int:task_id>/edit', methods=['GET', 'POST'])
 @login_required
 def edit_task(task_id):
-    """Edit an existing task"""
     task = Task.query.get_or_404(task_id)
-
     if task.owner != current_user:
         flash('You do not have permission to edit this task.', 'danger')
         return redirect(url_for('main.dashboard'))
 
     form = TaskForm(obj=task)
-
     if form.validate_on_submit():
         try:
-            form.populate_obj(task)
+            task.title = form.title.data
+            task.due_date = form.due_date.data
             db.session.commit()
             flash('Task updated successfully!', 'success')
             return redirect(url_for('main.dashboard'))
         except Exception as e:
             db.session.rollback()
             flash('Failed to update task. Please try again.', 'danger')
-
     return render_template('edit_task.html', form=form, task=task)
-
 
 @main.route('/task/<int:task_id>/delete', methods=['POST'])
 @login_required
 def delete_task(task_id):
-    """Delete a task"""
     task = Task.query.get_or_404(task_id)
-
     if task.owner != current_user:
         flash('You do not have permission to delete this task.', 'danger')
     else:
@@ -174,58 +141,67 @@ def delete_task(task_id):
         except Exception as e:
             db.session.rollback()
             flash('Failed to delete task. Please try again.', 'danger')
-
     return redirect(url_for('main.dashboard'))
-
 
 @main.route('/task/<int:task_id>/toggle', methods=['POST'])
 @login_required
 def toggle_task(task_id):
-    """Toggle task completion status"""
     task = Task.query.get_or_404(task_id)
-
     if task.owner != current_user:
         flash('You do not have permission to modify this task.', 'danger')
     else:
         try:
-            task.task_done = not task.task_done
+            task.completed = not task.completed
             db.session.commit()
-            status = 'completed' if task.task_done else 'pending'
+            status = 'completed' if task.completed else 'pending'
             flash(f'Task marked as {status}.', 'success')
         except Exception as e:
             db.session.rollback()
             flash('Failed to update task status. Please try again.', 'danger')
-
     return redirect(url_for('main.dashboard'))
 
 
+@main.route('/task/<int:task_id>/star', methods=['POST'])
+@login_required
+def toggle_star(task_id):
+    """Toggle task star status"""
+    task = Task.query.get_or_404(task_id)
+    if task.owner != current_user:
+        flash('You do not have permission to modify this task.', 'danger')
+    else:
+        try:
+            task.starred = not task.starred
+            db.session.commit()
+            status = 'starred' if task.starred else 'unstarred'
+            flash(f'Task {status}.', 'success')
+        except Exception as e:
+            db.session.rollback()
+            flash('Failed to update task. Please try again.', 'danger')
+    return redirect(url_for('main.dashboard'))
+
+# --------------------- Task Filters ---------------------
 @main.route('/tasks/filter/<status>')
 @login_required
 def filter_tasks(status):
-    """Filter tasks by status"""
     valid_statuses = ['finished', 'unfinished']
-
     if status not in valid_statuses:
         flash('Invalid status parameter.', 'danger')
         return redirect(url_for('main.dashboard'))
 
-    today = datetime.now().strftime('%Y-%m-%d')
+    today = datetime.now().date()
     tasks = Task.query.filter_by(
         user_id=current_user.id,
-        task_done=(status == 'finished')
+        completed=(status == 'finished')
     ).order_by(
         Task.starred.desc(),
         Task.due_date.asc()
     ).all()
-
     return render_template('dashboard.html', tasks=tasks, today=today)
-
 
 @main.route('/tasks/starred')
 @login_required
 def starred_tasks():
-    """Show only starred tasks"""
-    today = datetime.now().strftime('%Y-%m-%d')
+    today = datetime.now().date()
     tasks = Task.query.filter_by(
         user_id=current_user.id,
         starred=True
@@ -234,26 +210,23 @@ def starred_tasks():
     ).all()
     return render_template('dashboard.html', tasks=tasks, today=today)
 
-
 # --------------------- Email Reminder System ---------------------
-
 def check_due_tasks():
-    """Check for due tasks and send reminders"""
     with scheduler.app.app_context():
-        today = datetime.now().strftime('%Y-%m-%d')
-        tasks = Task.query.filter_by(due_date=today, task_done=False).all()
-
+        today = datetime.now().date()
+        tasks = Task.query.filter_by(
+            due_date=today,
+            completed=False
+        ).all()
         for task in tasks:
             try:
                 send_reminder_email(task.owner, task)
             except Exception as e:
                 current_app.logger.error(f"Failed to send reminder for task {task.id}: {e}")
 
-
-# Schedule the task checker
 scheduler.add_job(
     func=check_due_tasks,
     trigger='cron',
-    hour=9,  # 9 AM daily
+    hour=9,
     timezone='UTC'
 )

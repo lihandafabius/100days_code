@@ -25,7 +25,7 @@
             <div class="card stats-card h-100">
                 <div class="card-body">
                     <h6 class="text-uppercase text-muted mb-2">Completed</h6>
-                    <h3 class="mb-0">{{ tasks|selectattr('task_done')|list|length }}</h3>
+                    <h3 class="mb-0">{{ tasks|selectattr('completed')|list|length }}</h3>
                 </div>
             </div>
         </div>
@@ -33,7 +33,7 @@
             <div class="card stats-card h-100">
                 <div class="card-body">
                     <h6 class="text-uppercase text-muted mb-2">Pending</h6>
-                    <h3 class="mb-0">{{ tasks|rejectattr('task_done')|list|length }}</h3>
+                    <h3 class="mb-0">{{ tasks|rejectattr('completed')|list|length }}</h3>
                 </div>
             </div>
         </div>
@@ -48,7 +48,6 @@
     </div>
 
     <!-- Task Filter Buttons -->
-<!-- Change this section only -->
     <div class="btn-group w-100 mb-4" role="group">
         <a href="{{ url_for('main.dashboard') }}" class="btn btn-outline-primary">
             <i class="fas fa-list me-2"></i>All Tasks
@@ -85,20 +84,20 @@
                                     {% if task.starred %}
                                         <i class="fas fa-star text-warning me-2"></i>
                                     {% endif %}
-                                    <span class="{% if task.task_done %}task-completed{% endif %}">
-                                        {{ task.task }}
+                                    <span class="{% if task.completed %}task-completed{% endif %}">
+                                        {{ task.title }}
                                     </span>
                                 </div>
                             </td>
                             <td>
-                                <form action="{{ url_for('main.update_task_status', task_id=task.id) }}" method="POST" class="d-inline">
+                                <form action="{{ url_for('main.toggle_task', task_id=task.id) }}" method="POST" class="d-inline">
                                     <div class="form-check form-switch">
                                         <input class="form-check-input" type="checkbox" role="switch"
-                                               id="task-{{ task.id }}" name="task_done"
-                                               {% if task.task_done %}checked{% endif %}
+                                               id="task-{{ task.id }}" name="completed"
+                                               {% if task.completed %}checked{% endif %}
                                                onchange="this.form.submit()">
                                         <label class="form-check-label" for="task-{{ task.id }}">
-                                            {{ 'Completed' if task.task_done else 'Pending' }}
+                                            {{ 'Completed' if task.completed else 'Pending' }}
                                         </label>
                                     </div>
                                 </form>
@@ -110,7 +109,7 @@
                             </td>
                             <td>
                                 <div class="d-flex gap-2">
-                                    <a href="{{ url_for('main.update_task', task_id=task.id) }}"
+                                    <a href="{{ url_for('main.edit_task', task_id=task.id) }}"
                                        class="btn btn-sm btn-outline-primary" title="Edit">
                                         <i class="fas fa-edit"></i>
                                     </a>
