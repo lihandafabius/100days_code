@@ -2,25 +2,16 @@ from flask import Blueprint, render_template, redirect, url_for, flash, request,
 from flask_login import login_user, logout_user, login_required, current_user
 from werkzeug.security import generate_password_hash, check_password_hash
 from datetime import datetime
-from apscheduler.schedulers.background import BackgroundScheduler
-import atexit
 
 from To_Do_List import db, login_manager
 from To_Do_List.models import User, Task
 from To_Do_List.forms import RegisterForm, LoginForm, TaskForm
 from To_Do_List.utils import send_reminder_email
-from config import Config
 
 main = Blueprint('main', __name__)
 
-# Initialize scheduler
-scheduler = BackgroundScheduler()
-scheduler.start()
-atexit.register(lambda: scheduler.shutdown())
-
 @login_manager.user_loader
 def load_user(user_id):
-    """Load user for Flask-Login"""
     return User.query.get(int(user_id))
 
 # --------------------- Auth Routes ---------------------
@@ -211,22 +202,13 @@ def starred_tasks():
     return render_template('dashboard.html', tasks=tasks, today=today)
 
 # --------------------- Email Reminder System ---------------------
-def check_due_tasks():
-    with scheduler.app.app_context():
+def check_due_tasks(app):
+    """Send reminder emails for tasks due today."""
+    with app.app_context():
         today = datetime.now().date()
-        tasks = Task.query.filter_by(
-            due_date=today,
-            completed=False
-        ).all()
+        tasks = Task.query.filter_by(due_date=today, completed=False).all()
         for task in tasks:
             try:
                 send_reminder_email(task.owner, task)
             except Exception as e:
                 current_app.logger.error(f"Failed to send reminder for task {task.id}: {e}")
-
-scheduler.add_job(
-    func=check_due_tasks,
-    trigger='cron',
-    hour=9,
-    timezone='UTC'
-)
